@@ -9,6 +9,7 @@ packages = [{include = "poetry"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 cocotb = "^1.9.2"
+icecream = "^2.1.4"
 
 
 [build-system]

@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1741693212" />
-    <testcase name="run_test_uart_rx" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="220" time="0.6690883636474609" sim_time_ns="104190.001" ratio_time="155719.34390252997" />
-  </testsuite>
-</testsuites>
