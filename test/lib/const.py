@@ -1,6 +1,19 @@
+'''
+* Author: ImpulsePower
+* Date of creation: 01/04/2025
+* Description: Classes for testbench constant 
+* License:
+* Language: Python
+* History:
+
+'''
 from dataclasses import dataclass
 
 class Units:
+    """
+    Class of time measurement unit. Needed for calculations of delays, 
+    periods of signals, etc
+    """
     __slots__ = ('fs', 'ps', 'ns', 'us', 'ms', 'sc', 'name', 'value')
     def __init__(self, unit: str = None):
         # Unit value table
@@ -21,6 +34,9 @@ class Units:
 
         Args:   
             unit: Name of unit.
+
+        Return:
+            str: Full name UNIT string
         """
         unit_names = {
             'fs': 'Femtosecond',
@@ -32,18 +48,26 @@ class Units:
         }
         return unit_names.get(unit, 'unknown')
 
-    def get_value(self, unit: str) -> int:
-        """
-        Return value
+    def get_value(self, unit: str) -> int | None:
+        """ Get mult factor of UNIT string 
 
         Args:   
             unit: Name of unit.
+
+        Return:
+            int: Unit value from value table
         """
-        return getattr(self, unit)
+        try:
+            return getattr(self, unit)
+        except AttributeError:
+            return None
 
     def __repr__(self) -> str:
-        """
-        Printing current value UNIT
+        """Printing current value UNIT
+
+        Return:
+            str: Printing string with mask:
+            UNIT: X (value=X)
         """
         return f"<UNIT: {self.name} (value={self.value})>"
     
@@ -51,19 +75,25 @@ class Units:
 class DesignConstants:
     """
     Design-related constants
+
     Attributes:
         CLOCK_FREQ: Clock frequency in Hz (default: 100 MHz)
         BAUD_RATE: Baud rate in bps (default: 115200)
         DATA_WIDTH: Data width in bits (default: 8)
+        CLK_NAME: Name of clock signal in hardware design (default: "CLKip") 
+        RST_NAME: Name of reset signal in hardware design (default: "RST_NAME") 
     """
     CLOCK_FREQ: int = 100_000_000
     BAUD_RATE: int = 115_200
     DATA_WIDTH: int = 8
+    CLK_NAME: str = "CLKip"
+    RST_NAME: str = "RSTi"
 
 @dataclass(frozen=True)
 class TestbenchConstants:
     """
     Testbench-related constants
+    
     Attributes:
         NEED_RST: Whether reset is needed (default: True)
         NUM_OF_TEST: Number of tests (default: 1)
@@ -76,7 +106,7 @@ class TestbenchConstants:
     design: DesignConstants
     
     NEED_RST: bool = True
-    NUM_OF_TEST: int = 1
+    NUM_OF_TEST: int = 2
     UNIT: str = 'ns'
     RESET_period: int = 20
     CLOCK_DELAY: int = 10
@@ -85,24 +115,42 @@ class TestbenchConstants:
     
     @property
     def CLK_period(self) -> float:
-        """Clock period in current units"""
+        """Calculates the time of the clock period in current units
+
+        Return: 
+            float: Calculated time of the clock period
+        """
         return Units().value / self.design.CLOCK_FREQ
     
     @property
     def BIT_period(self) -> int:
-        """Bit period in current units"""
+        """Bit period in current units
+
+        Return: 
+            int: Calculated time of the bit period
+        """
         return int((self.design.CLOCK_FREQ / self.design.BAUD_RATE) * self.CLK_period)
     
     @property
     def TB_DELAY(self) -> int:
-        """Testbench delay in current units"""
+        """Testbench delay in current units
+
+        Return: 
+            int: Calculated time of the internal testbench period
+        """
         return self.BIT_period * 2
 
     def __repr__(self) -> str:
         """
         Printing current value
+
+        Return: 
+            str: Printing string with mask:
+            RESET: X UNIT: X
+            CLOCK DELAY: X RESET DELAY: X DELAY: X 
         """
         return f'''
         <RESET: {self.NEED_RST} UNIT: {self.UNIT}>
         <CLOCK DELAY: {self.CLOCK_DELAY} RESET DELAY: {self.RESET_DELAY}) DELAY: {self.DELAY})>
         '''
+    

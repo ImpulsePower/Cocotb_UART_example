@@ -1,0 +1,9 @@
+{
+    "python.testing.pytestArgs": [
+        "--rootdir=${workspaceFolder}/test",
+        "--cov=lib",
+        "--cov-report=term-missing"
+    ],
+    "python.testing.cwd": "${workspaceFolder}/test",
+    "python.testing.pytestEnabled": true
+}
