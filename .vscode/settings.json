@@ -3,6 +3,7 @@
         "--rootdir=${workspaceFolder}/test",
         "--cov=lib",
         "--cov-report=term-missing"
+        // "--cov-report=skip_empty"
     ],
     "python.testing.cwd": "${workspaceFolder}/test",
     "python.testing.pytestEnabled": true

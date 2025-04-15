@@ -27,19 +27,27 @@ class TB:
         self.dc             = DesignConstants()
         self.tbc            = TestbenchConstants(design=self.dc)
         self.transaction    = UART_Transaction()
-        self.sequencer      = sequencer()
-        self.monitor        = monitor()
-        self.driver         = driver()
-        self.scoreboard     = scoreboard()
+        self.sequencer      = Sequencer()
+        self.monitor        = Monitor()
+        self.driver         = Driver()
+        self.scoreboard     = Scoreboard()
+        # Setup
+        self.sig_in: str    = ''
+        self.sig_out: str   = ''
         # flags
         self.stop_clk_flg = False
         self.stop_drv_flg = False
         self.stop_agt_flg = False
 
-    def setup(self):
-        ...
+    def setup(self, sig_in: str, sig_out: str) -> None:
+        if (not sig_in and not sig_out):
+            self.sig_in = sig_in
+            self.sig_in = sig_out
+            self.log.info("Signals setting!")
+        else:
+            self.log.error("Signals is not set!")
 
-    async def start(self):
+    async def start(self) -> None:
         """Start UVM agent process"""
         await cocotb.start(TB.generate_clock(self))
         if (self.tbc.NEED_RST): 
@@ -48,17 +56,17 @@ class TB:
         for trans in next(TB.sequencer(self,self.tbc.NUM_OF_TEST)):
             scr.interface_drv_scr(trans)
             await TB.driver(self,trans)
-            await TB.monitor(self,trans)
+            await TB.monitor(self,trans,sig=self.sig_out)
         await scr.start()
 
-    async def stop(self):
+    async def stop(self) -> None:
         """Stop UVM agent process."""
         self.dut._log.info("Finish!") 
         self.stop_clk_flg = True
         self.stop_drv_flg = True
         self.stop_agt_flg = True
 
-    async def generate_clock(self):
+    async def generate_clock(self) -> None:
         """
         Generate clock pulses.
         """
@@ -72,7 +80,7 @@ class TB:
             clk.value = 0
             await Timer(int(period / 2), units=self.tbc.UNIT)
 
-    async def generate_reset(self):
+    async def generate_reset(self) -> None:
         """
         Generate reset pulse.
         """
@@ -95,16 +103,19 @@ class TB:
         return (f"baud={self.BAUD_RATEi}, "
                 f"rx={hex(self.RXi)}, "
                 f"data={hex(self.DATAo)}, "
-                f"time={self.set_time:.2f}{self.config.unit})")
+                f"time={self.set_time:.2f}{self.config.unit})"
+                f"sig_in={self.sig_in}, "
+                f"sig_out={self.sig_out}, "
+                )
         
-class sequencer:
+class Sequencer:
     """
     UVM sequencer. The generator creates or generates randomized transactions 
     or stimulus and passes them to the driver.
     Args:   
         num_transactions : number of test case transactions
     """
-    def sequencer(self,num_transactions):
+    def generate(self,num_transactions):
         transaction = []
         for _ in range(num_transactions):
             for index in range(self.dc.DATA_WIDTH + 1):
@@ -123,32 +134,7 @@ class sequencer:
         sequencer_out = tuple(transaction)
         yield sequencer_out
 
-class monitor:
-    """
-    UVM monitor. The monitor observes pin-level activity on the connected 
-    interface at the input and output of the design. This pin-level 
-    activity is converted into a transactions packet and sent 
-    to the scoreboard for checking purposes
-    Args:
-        transactions : The transactions is a packet that is driven to the DUT
-    """ 
-    async def monitor(self, 
-                      transactions, 
-                      output_handler=None, 
-                      sig: str = "DATAo",
-                      done_bit: str = "DONEo",
-                      dut_interface=None
-                      ):
-        dut = dut_interface if dut_interface is not None else self.dut
-        
-        done = getattr(dut, done_bit).value
-        if done:
-            signal_value = getattr(dut, sig).value
-            handler = output_handler if output_handler is not None else int_mon_scr
-            setattr(transactions, sig, signal_value)
-            setattr(handler, sig, signal_value)
-
-class driver:
+class Driver:
     """
     UVM driver. The driver interacts with DUT. It receives randomized transactions 
     from the generator and drives them to the driven as a pin level activity.
@@ -165,7 +151,34 @@ class driver:
             getattr(self.dut, sig_name).value = getattr(transactions,sig_name)
             await Timer(transactions.set_time, units=self.tbc.UNIT)
 
-class scoreboard:
+class Monitor:
+    """
+    UVM monitor. The monitor observes pin-level activity on the connected 
+    interface at the input and output of the design. This pin-level 
+    activity is converted into a transactions packet and sent 
+    to the scoreboard for checking purposes
+    Args:
+        transactions : The transactions is a packet that is driven to the DUT
+    """
+    def __init__(self):
+        self.sig_out: str = ""
+        
+    async def monitor(self, 
+                      transactions, 
+                      output_handler=None, 
+                      done_bit: str = "DONEo",
+                      dut_interface=None
+                      ):
+        dut = dut_interface if dut_interface is not None else self.dut
+        sig = self.sig_out
+        done = getattr(dut, done_bit).value
+        if done:
+            signal_value = getattr(dut, sig).value
+            handler = output_handler if output_handler is not None else int_mon_scr
+            setattr(transactions, sig, signal_value)
+            setattr(handler, sig, signal_value)
+            
+class Scoreboard:
     """
     UVM scoreboard. The scoreboard receives the transactions packet from the monitor 
     and compares it with the reference model. The reference module is written based 

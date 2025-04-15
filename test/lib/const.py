@@ -84,10 +84,11 @@ class DesignConstants:
         RST_NAME: Name of reset signal in hardware design (default: "RST_NAME") 
     """
     CLOCK_FREQ: int = 100_000_000
-    BAUD_RATE: int = 115_200
+    BAUD_RATE: int  = 115_200
     DATA_WIDTH: int = 8
-    CLK_NAME: str = "CLKip"
-    RST_NAME: str = "RSTi"
+    CLK_NAME: str   = "CLKip"
+    RST_NAME: str   = "RSTi"
+    DONE_NAME: str  = "DONEo"
 
 @dataclass(frozen=True)
 class TestbenchConstants:
@@ -104,7 +105,6 @@ class TestbenchConstants:
         DELAY: Generic delay in ns (default: 20)
     """
     design: DesignConstants
-    
     NEED_RST: bool = True
     NUM_OF_TEST: int = 2
     UNIT: str = 'ns'

@@ -13,14 +13,6 @@ from dataclasses import dataclass
 
 from lib.const import *
 
-# class TB_interfaces:
-#     def __init__(self):
-#         self.mon_scr: int = 0    
-
-#     def transfer_to_scoreboard(self, value: int) -> None:
-#         """Transfer to scoreboard."""
-#         self.mon_scoreboard = value
-
 @dataclass(frozen=True)
 class TransactionConfig:
     """Configuration of transaction parameters"""

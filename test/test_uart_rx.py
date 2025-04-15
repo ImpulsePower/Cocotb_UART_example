@@ -49,6 +49,7 @@ async def run_test_uart_rx(dut):
     tb = TB(dut)
     # tb.transactions = generate_transaction()
     # # clk_edge = RisingEdge(clk)
+    tb.setup()
     await tb.start()
     await tb.stop()
     # await Timer(int(TestbenchConstants.TB_DELAY), units=TestbenchConstants.UNIT)
