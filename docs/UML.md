@@ -1,10 +1,17 @@
 ---
-title: UART testbench
+title: UML_uart
+markmap:
+    initialExpandLevel: 2
 ---
 
 # UML Class diagram for UART cocotb testbench
+
+## Mermaid code
+
+The following is a cocotb UML class diagram of the test:
+
 ```mermaid
-classDiagram
+    classDiagram
     class TB {
         +dut: Object
         +log: Object
@@ -21,19 +28,23 @@ classDiagram
         -stop_drv_flg: Bool
         -stop_agt_flg: Bool
         +setup(str,str) None
-        -start() None
-        -stop() None
-        -generate_clock() None
-        -generate_reset() None
-        -get_stats() dict
-        -__repr__() str
+        +start() None
+        +stop() None
+        +generate_clock() None
+        +generate_reset() None
+        +get_stats() dict
+        +__repr__() str
     }
 
     class Sequencer {
         +done: Bool
+        +transaction_queue: list[uvm_sequence_item]
+        +sensitivity_var: str
+        +get_next_item() uvm_sequence_item
         +start() tuple
         +stop() None
         +status_done() Bool
+        +sensitivity_var_setter(str) None
     }
 
     class Monitor {
@@ -123,3 +134,7 @@ classDiagram
     Transaction *-- TransactionConfig : config
 
 ```
+
+
+
+

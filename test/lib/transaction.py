@@ -16,11 +16,11 @@ from lib.const import *
 @dataclass(frozen=True)
 class TransactionConfig:
     """Configuration of transaction parameters"""
-    default_baud_rate: int = 9600
+    default_baud_rate: int = 115_200
     min_baud_rate: int = 300
     max_baud_rate: int = 115_200
     min_data: int = 0
-    max_data: int = hex((2 ** DesignConstants.DATA_WIDTH) - 1)
+    max_data: int = 1
     unit: str = TestbenchConstants.UNIT
 
 class transactions:
@@ -112,13 +112,34 @@ class UART_Transaction:
         packet (tuple): Container for transaction data packets.
         transaction_id (int): Unique identifier for this transaction.
     """
-    _instance_count = 0
+    # _instance_count = 0
     def __init__(self):
-        """Initializes a new UART transaction instance."""
-        UART_Transaction._instance_count += 1
-        self.packet = (transactions)[DesignConstants.DATA_WIDTH + 2]
-        self.transaction_id = transactions._instance_count
+        """
+        Initializes a new UART transaction instance.
+        """
+        # UART_Transaction._instance_count += 1
+        self.blank = transactions()
+        self.packet: list[Any] = []
+        # self.data_width = DesignConstants.DATA_WIDTH
+        # self.transaction_id = transactions._instance_count
 
+    def forge(self,br,rx,tm):
+        '''
+        '''
+        self.blank.set_baud_rate(br)
+        self.blank.set_rx_data(rx)
+        self.blank.set_time_transaction(tm)
+
+    def add(self):
+        '''
+        '''
+        self.packet.append(self.blank)
+
+    def get(self) -> list:
+        '''
+        '''
+        return self.packet
+    
     def __repr__(self) -> str:
         """Generates official string representation of the transaction.
         
@@ -135,3 +156,17 @@ class UART_Transaction:
             int: The count of all instances created for this class.
         """
         return cls._instance_count
+    
+# uart = UART_Transaction()
+# br = 9600
+# rx = 1
+# tm = 50000
+# # print(type(uart.blank.config.min_data))
+# # print(type(uart.blank.config.max_data))
+# uart.forge(br,rx,tm)
+# packet_width = 8 + 2
+# for i in range(packet_width):
+#     uart.add()
+
+# out = uart.get()
+# print(out)

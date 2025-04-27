@@ -46,10 +46,12 @@ async def run_test_uart_rx(dut):
     Args:   
         dut : Design under test.
     """
+    sig_in = "RXi"
+    sig_out = "DATAo"
     tb = TB(dut)
     # tb.transactions = generate_transaction()
     # # clk_edge = RisingEdge(clk)
-    tb.setup()
+    tb.setup(sig_in,sig_out)
     await tb.start()
     await tb.stop()
     # await Timer(int(TestbenchConstants.TB_DELAY), units=TestbenchConstants.UNIT)
