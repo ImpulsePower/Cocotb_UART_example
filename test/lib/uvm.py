@@ -9,6 +9,7 @@
 '''
 import logging
 from random import randint
+from icecream import ic
 
 import cocotb
 from cocotb.triggers import Timer, RisingEdge
@@ -46,7 +47,7 @@ class TB:
         if (sig_in and sig_out):
             # Здесь должна быть проверка на наличие данного сигнала в списке портов
             self._sig_in = sig_in
-            self._sig_in = sig_out
+            self._sig_out = sig_out
             self.log.info("Signals setting!")
         else:
             self.log.error("Signals is not set!")
@@ -60,11 +61,12 @@ class TB:
         if (self.tbc.NEED_RST): 
             await self.generate_reset()
         trs = self.sequencer.start(self._sig_in)
-        print(trs)
-        # for tr in trs:
-        #     # self.scoreboard.interface_drv_scr(tr)
-        #     await self.driver.start(self,tr)
-        #     await self.monitor.start(self,tr,sig=self.sig_out)
+
+        for tr in trs:
+            ic(tr)
+            # self.scoreboard.interface_drv_scr(tr)
+            await self.driver.start(self,dut=self.dut, scr=self.scoreboard, tr )
+            # await self.monitor.start(self,tr,sig=self.sig_out)
         # await self.scoreboard.start()
 
         # for trans in next(self.sequencer.start(self,self.tbc.NUM_OF_TEST)):
@@ -157,7 +159,7 @@ class Sequencer:
                 rx=rx, 
                 tm=tm
                 )
-            self.transaction.add()
+            self.transaction.add(i)
         return self.transaction.get()
 
     def stop(self) -> None:
@@ -198,18 +200,16 @@ class Driver:
     Args:
         transactions : The transactions is a packet that is driven to the DUT
     """
-    def __init__(self, dut, scr, tbc):
+    def __init__(self, dut, tbc):
         self.log = logging.getLogger("cocotb.driver")
         self.log.setLevel(logging.DEBUG)
-        self.dut = dut
-        self.scr = scr
+        # self.dut = dut
         self.tbc = tbc
 
-    async def start(self,tr, 
-                     sig_name: str = "RXi", 
-                     baud_rate: str = "BAUD_RATEi"
-                     ):
-        self.scr.interface_drv_scr(tr)
+    async def start(self, dut ,scr, tr):
+        sig_name: str = "RXi", 
+        baud_rate: str = "BAUD_RATEi",
+        scr.interface_drv_scr(tr)
         if not self.stop_drv_flg:
             getattr(self.dut, baud_rate).value = getattr(tr,baud_rate)
             getattr(self.dut, sig_name).value = getattr(tr,sig_name)

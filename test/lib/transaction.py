@@ -7,7 +7,7 @@
 * History:
 
 '''
-from typing import Optional,Dict, Any
+from typing import Optional,Dict, Any, List
 from icecream import ic
 from dataclasses import dataclass
 
@@ -16,7 +16,7 @@ from lib.const import *
 @dataclass(frozen=True)
 class TransactionConfig:
     """Configuration of transaction parameters"""
-    default_baud_rate: int = 115_200
+    default_baud_rate: int = 9600
     min_baud_rate: int = 300
     max_baud_rate: int = 115_200
     min_data: int = 0
@@ -48,16 +48,17 @@ class transactions:
         else:
             self.error_count += 1
     
-    def set_rx_data(self, data: int) -> None:
+    def set_rx_data(self, rx: int) -> None:
         """Sets the RX data value after validating against configured limits.
 
         Args:
             data: The incoming data value to be set. Must be within min_data/max_data range.
         """
-        if self.config.min_data <= data <= self.config.max_data:
-            self.RXi = data
-        else:
-            self.error_count += 1
+        
+        # if self.config.min_data <= data <= self.config.max_data:
+        self.RXi = rx
+        # else:
+        #     self.error_count += 1
 
     def set_time_transaction(self, time: int) -> None:
         """Sets the transaction timestamp.
@@ -113,27 +114,52 @@ class UART_Transaction:
         transaction_id (int): Unique identifier for this transaction.
     """
     # _instance_count = 0
-    def __init__(self):
+    def __init__(self, config: Optional[TransactionConfig] = None):
         """
         Initializes a new UART transaction instance.
         """
         # UART_Transaction._instance_count += 1
-        self.blank = transactions()
-        self.packet: list[Any] = []
+        self.dc = DesignConstants()
+        self.blank: transactions = transactions(config)
+        self.packet: List[Optional[transactions]] = [None] * (self.dc.DATA_WIDTH+2)
+        # self.workpiece: 'transactions' = transactions() 
         # self.data_width = DesignConstants.DATA_WIDTH
         # self.transaction_id = transactions._instance_count
 
     def forge(self,br,rx,tm):
-        '''
-        '''
+        """Configures the blank transaction template with provided values.
+        
+        Args:
+            br: Baud rate value
+            rx: RX data value
+            tm: Timestamp value
+        """
         self.blank.set_baud_rate(br)
         self.blank.set_rx_data(rx)
         self.blank.set_time_transaction(tm)
+        
 
-    def add(self):
-        '''
-        '''
-        self.packet.append(self.blank)
+    def add(self,index):
+        """Adds the current blank transaction to the specified packet index.
+        
+        Args:
+            index: Position in packet (0-9)
+            
+        Raises:
+            IndexError: If index is out of bounds
+        """
+        if not 0 <= index < len(self.packet):
+            raise IndexError(f"Индекс {index} выходит за границы 0-{len(self.packet)-1}")
+        if self.packet[index] is not None:
+            raise ValueError(f"Позиция {index} уже содержит транзакцию")
+        
+        update_packet = lambda idx: (
+            setattr(self.packet[idx], 'BAUD_RATEi', self.blank.BAUD_RATEi),
+            setattr(self.packet[idx], 'RXi', self.blank.RXi),
+            setattr(self.packet[idx], 'set_time', self.blank.set_time)
+        )        
+        self.packet[index] = transactions()
+        update_packet(index)        
 
     def get(self) -> list:
         '''
