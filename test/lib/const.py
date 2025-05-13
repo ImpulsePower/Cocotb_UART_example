@@ -8,6 +8,7 @@
 
 '''
 from dataclasses import dataclass
+from functools import cached_property
 
 class Units:
     """
@@ -106,14 +107,14 @@ class TestbenchConstants:
     """
     design: DesignConstants
     NEED_RST: bool = True
-    NUM_OF_TEST: int = 2
+    NUM_OF_TEST: int = 50
     UNIT: str = 'ns'
     RESET_period: int = 20
     CLOCK_DELAY: int = 10
     RESET_DELAY: int = 10
     DELAY: int = 20
     
-    @property
+    @cached_property
     def CLK_period(self) -> float:
         """Calculates the time of the clock period in current units
 
@@ -122,7 +123,7 @@ class TestbenchConstants:
         """
         return Units().value / self.design.CLOCK_FREQ
     
-    @property
+    @cached_property
     def BIT_period(self) -> int:
         """Bit period in current units
 
@@ -131,7 +132,7 @@ class TestbenchConstants:
         """
         return int((self.design.CLOCK_FREQ / self.design.BAUD_RATE) * self.CLK_period)
     
-    @property
+    @cached_property
     def TB_DELAY(self) -> int:
         """Testbench delay in current units
 

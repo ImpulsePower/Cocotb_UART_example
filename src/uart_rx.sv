@@ -83,6 +83,7 @@ module uart_rx
                 half_rx_strb    <= 0;
                 rx_strb         <= 0;
                 bit_idx         <= 0;
+                
             end
             START: begin
                 if (clk_count == half_bit_cntr) begin
@@ -90,6 +91,7 @@ module uart_rx
                     clk_count   <= 0;
                 end
                 else begin
+                    data         <= 0;
                     half_rx_strb <= 0;
                     clk_count <= ++clk_count;
                 end                

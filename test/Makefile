@@ -1,25 +1,36 @@
 # Makefile
-# defaults
-TOPLEVEL_LANG ?= verilog
-SIM ?= icarus
-WAVES = 1
-# COMPILE_ARGS += -g2012
 PWD=$(shell pwd)
-
-TOPLEVEL = uart_rx
-
-COCOTB_RESULTS_FILE = $(PWD)/../temp/res_$(TOPLEVEL).xml
-
-# VERILOG_SOURCES += $(PWD)/../src/CH4.sv
+TOPLEVEL_LANG ?= verilog
 VERILOG_SOURCES += $(PWD)/../src/$(TOPLEVEL).sv $(PWD)/../src/sync.sv $(PWD)/../src/uart_rx_mem.sv
-
-# MODULE = test_$(TOPLEVEL)
+TOPLEVEL = uart_rx
 MODULE = test_$(TOPLEVEL)
 
-# export COCOTB_LOG_LEVEL=DEBUG
+COCOTB_RESULTS_FILE = $(PWD)/../temp/res_$(TOPLEVEL).xml
+COCOTB_HDL_TIMEUNIT = 1ns
+COCOTB_HDL_TIMEPRECISION = 1ps
 
-# SIM_BUILD = $(PWD)/../test/sim_build/$(TOPLEVEL)
-SIM_BUILD = $(PWD)/../test/build/$(TOPLEVEL)
+all=icarus
+# Правило для Icarus Verilog
+icarus:
+	SIM=icarus \
+	TOPLEVEL_LANG="$(TOPLEVEL_LANG)" \
+	VERILOG_SOURCES="$(VERILOG_SOURCES)" \
+	TOPLEVEL="$(TOPLEVEL)" \
+	MODULE="$(MODULE)" \
+	SIM_BUILD=$(PWD)/../test/build/$(TOPLEVEL)/icarus \
+	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
-# include cocotb's make rules to take care of the simulator setup
-include $(shell cocotb-config --makefiles)/Makefile.sim
+# Правило для Verilator
+verilator:
+	SIM=verilator \
+	TOPLEVEL_LANG="$(TOPLEVEL_LANG)" \
+	EXTRA_ARGS="--trace --coverage" \
+	VERILOG_SOURCES="$(VERILOG_SOURCES)" \
+	TOPLEVEL="$(TOPLEVEL)" \
+	MODULE="$(MODULE)" \
+	SIM_BUILD=$(PWD)/../test/build/$(TOPLEVEL)/verilator \
+	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
+
+# Очистка
+# clean:
+# 	rm -rf $(PWD)/../test/build/$(TOPLEVEL) __pycache__ *.vcd *.vst *.fst *.xml

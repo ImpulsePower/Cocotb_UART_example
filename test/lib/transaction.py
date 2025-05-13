@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 from lib.const import *
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class TransactionConfig:
     """Configuration of transaction parameters"""
     default_baud_rate: int = 9600
@@ -122,9 +122,6 @@ class UART_Transaction:
         self.dc = DesignConstants()
         self.blank: transactions = transactions(config)
         self.packet: List[Optional[transactions]] = [None] * (self.dc.DATA_WIDTH+2)
-        # self.workpiece: 'transactions' = transactions() 
-        # self.data_width = DesignConstants.DATA_WIDTH
-        # self.transaction_id = transactions._instance_count
 
     def forge(self,br,rx,tm):
         """Configures the blank transaction template with provided values.
@@ -138,7 +135,6 @@ class UART_Transaction:
         self.blank.set_rx_data(rx)
         self.blank.set_time_transaction(tm)
         
-
     def add(self,index):
         """Adds the current blank transaction to the specified packet index.
         
@@ -174,6 +170,10 @@ class UART_Transaction:
         """
         return (f"Transaction(id={self.transaction_id}, ")
     
+    def reset(self, config: Optional[TransactionConfig] = None):
+        self.blank = transactions(config)
+        self.packet = [None] * (self.dc.DATA_WIDTH+2)
+
     @classmethod
     def get_instance_count(cls) -> int:
         """Gets the total number of UART transaction instances created.
@@ -183,16 +183,3 @@ class UART_Transaction:
         """
         return cls._instance_count
     
-# uart = UART_Transaction()
-# br = 9600
-# rx = 1
-# tm = 50000
-# # print(type(uart.blank.config.min_data))
-# # print(type(uart.blank.config.max_data))
-# uart.forge(br,rx,tm)
-# packet_width = 8 + 2
-# for i in range(packet_width):
-#     uart.add()
-
-# out = uart.get()
-# print(out)

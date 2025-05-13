@@ -39,23 +39,29 @@ def print_dut_structure(dut, indent=0):
             print("  " * indent + f"├─ {name} ({type(obj).__name__})")
 
 @cocotb.test()
-async def run_test_uart_rx(dut):
+async def run_test_uart_rx(dut,sig_in="RXi",sig_out="DATAo"):
     """
-    Try accessing the design.
-
-    Args:   
-        dut : Design under test.
+    Args: sig_in : "RXi" sig_out : "DATAo"
     """
-    sig_in = "RXi"
-    sig_out = "DATAo"
     tb = TB(dut)
-    # tb.transactions = generate_transaction()
-    # # clk_edge = RisingEdge(clk)
     tb.setup(sig_in,sig_out)
     await tb.start()
     await tb.stop()
-    # await Timer(int(TestbenchConstants.TB_DELAY), units=TestbenchConstants.UNIT)
-        
+
+# @cocotb.test()
+# async def run_test_uart_rx2(dut,sig_in="BAUD_RATEi",sig_out="DATAo"):
+#     """
+#     Cocotb test design.
+
+#     Args:   
+#         dut : Design under test.
+#         sig_in : "RXi"
+#         sig_out : "DATAo"
+#     """
+#     tb = TB(dut)
+#     tb.setup(sig_in,sig_out)
+#     await tb.start()
+#     await tb.stop()
 
 # if __name__ == "__main__":
 # if cocotb.SIM_NAME:
