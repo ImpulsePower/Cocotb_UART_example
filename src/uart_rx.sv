@@ -33,7 +33,7 @@ module uart_rx
     logic                           half_rx_strb; // var for half strobe bit
     logic                           rx_strb; // var for strobe bit   
     int unsigned                    clk_count; // var for counter
-    logic [$clog2(DATA_WDTH)-1:0]   bit_idx; // var for bit counter (index)
+    logic [$clog2(DATA_WDTH+1)-1:0] bit_idx;  // var for bit counter (index)
     logic [DATA_WDTH-1:0]           data; // var for DATAo
     logic                           rx; // var for RXi
     logic                           rst; // var for RSTi
@@ -76,52 +76,54 @@ module uart_rx
     end
 
     // Strobe logic
-    always @(posedge CLKip) begin: strobe_logic
+always @(posedge CLKip) begin: strobe_logic
+    if (rst) begin
+        clk_count <= 0;
+        half_rx_strb <= 0;
+        rx_strb <= 0;
+    end else begin
         case (STATE)
             IDLE: begin
-                clk_count       <= 0;
-                half_rx_strb    <= 0;
-                rx_strb         <= 0;
-                bit_idx         <= 0;
-                
+                clk_count <= 0;
+                half_rx_strb <= 0;
+                rx_strb <= 0;
             end
             START: begin
                 if (clk_count == half_bit_cntr) begin
                     half_rx_strb <= 1;
-                    clk_count   <= 0;
+                    clk_count <= 0;
                 end
                 else begin
-                    data         <= 0;
                     half_rx_strb <= 0;
-                    clk_count <= ++clk_count;
+                    clk_count <= clk_count + 1;
                 end                
             end
             RECEIVE: begin
                 if (clk_count == bit_cntr) begin
                     rx_strb <= 1;
-                    clk_count   <= 0;
+                    clk_count <= 0;
                 end
                 else begin
                     rx_strb <= 0;
-                    clk_count <= ++clk_count;
+                    clk_count <= clk_count + 1;
                 end                  
             end
             STOP: begin
                 if (clk_count == bit_cntr) begin
                     rx_strb <= 1;
-                    clk_count   <= 0;
+                    clk_count <= 0;
                 end
                 else begin
                     rx_strb <= 0;
-                    clk_count <= ++clk_count;
+                    clk_count <= clk_count + 1;
                 end                  
             end  
             default: begin
                 clk_count <= 0;
-                STATE <= IDLE;
             end
         endcase
     end
+end
 
     // Implementation of the UART receiver operation logic
     always_ff @(posedge CLKip) begin: fsm_uart_rx
@@ -149,8 +151,10 @@ module uart_rx
                 end
                 // Input Receiving State
                 RECEIVE: begin
-                    if (rx_strb) begin                        
+                    if (rx_strb) begin
+                        /* verilator lint_off WIDTHTRUNC */                        
                         data[bit_idx] <= rx;
+                        /* verilator lint_on WIDTHTRUNC */
                         if (bit_idx < DATA_WDTH-1) begin 
                             bit_idx <= bit_idx + 1;
                         end

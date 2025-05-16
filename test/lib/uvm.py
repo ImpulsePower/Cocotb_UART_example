@@ -32,9 +32,16 @@ class TB:
         self.dc             = DesignConstants()
         self.tbc            = TestbenchConstants(design=self.dc)
         self.scoreboard     = Scoreboard(id=self.transaction_id)
-        self.sequencer      = Sequencer(dut=self.dut, dc=self.dc, tbc=self.tbc)
-        self.monitor        = Monitor(done=self.monitor_done,dut=self.dut,scr=self.scoreboard)
-        self.driver         = Driver(done=self.driver_done,dut=self.dut,scr=self.scoreboard,tbc=self.tbc)
+        self.sequencer      = Sequencer(dut=self.dut,
+                                        dc=self.dc, 
+                                        tbc=self.tbc)
+        self.monitor        = Monitor(done=self.monitor_done,
+                                      dut=self.dut,
+                                      scr=self.scoreboard)
+        self.driver         = Driver(done=self.driver_done,
+                                     dut=self.dut,
+                                     scr=self.scoreboard,
+                                     tbc=self.tbc)
         # Setup
         self.sig_in: str
         self.sig_out: str
@@ -52,7 +59,6 @@ class TB:
             sig_out: output parameter of the test case
         """
         if (sig_in and sig_out):
-            # Здесь должна быть проверка на наличие данного сигнала в списке портов
             self._sig_in = sig_in
             self._sig_out = sig_out
         else:
