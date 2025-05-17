@@ -53,7 +53,8 @@ module axi_lite_slave (
             // Сброс регистров
             for (integer i = 0; i < 16; i = i + 1)
                 registers[i] <= 0;
-        end else begin
+        end 
+        else begin
             // Write address channel
             if (s_axi_awvalid && !s_axi_awready) begin
                 s_axi_awready <= 1;
@@ -101,7 +102,8 @@ module axi_lite_slave (
                     s_axi_rdata <= 32'hDEADBEEF;
                     s_axi_rresp <= 2'b10; // SLVERR
                 end
-            end else if (s_axi_rready) begin
+            end 
+            else if (s_axi_rready) begin
                 s_axi_rvalid <= 0;
             end
         end

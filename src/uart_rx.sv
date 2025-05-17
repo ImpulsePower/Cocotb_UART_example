@@ -11,7 +11,7 @@
 
 module uart_rx 
     # (
-    parameter FREQ_CLK  = 100000000, // Clock frequency in Hz (100 MHz)
+    parameter FREQ_CLK  = 100_000_000, // Clock frequency in Hz (100 MHz)
     parameter DATA_WDTH = 8         // Data width (8 bits)
     ) (
     input   wire                    CLKip, // Clock signal
