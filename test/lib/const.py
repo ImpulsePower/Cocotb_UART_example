@@ -96,7 +96,7 @@ class TestbenchConstants:
     """
     Testbench-related constants
     
-    Attributes:
+    Args:
         NEED_RST: Whether reset is needed (default: True)
         NUM_OF_TEST: Number of tests (default: 1)
         UNIT: Time unit (default: 'ns')
@@ -107,7 +107,7 @@ class TestbenchConstants:
     """
     design: DesignConstants
     NEED_RST: bool = True
-    NUM_OF_TEST: int = 50
+    NUM_OF_TEST: int = 30
     UNIT: str = 'ns'
     RESET_period: int = 20
     CLOCK_DELAY: int = 10

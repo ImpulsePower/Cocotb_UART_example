@@ -9,6 +9,11 @@
 '''
 # from icecream import ic
 # from sys import getsizeof
+# import debugpy
+# 
+# debugpy.listen(5002)
+# print("Ожидание подключения отладчика...")
+# debugpy.wait_for_client()  # Скрипт остановится здесь, пока не подключится отладчик
 
 import cocotb
 # from cocotb.regression import TestFactory
