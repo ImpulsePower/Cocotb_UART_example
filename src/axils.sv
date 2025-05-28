@@ -88,8 +88,8 @@ module uart_axils #(
     always_ff @(posedge S_AXI_ACLK) begin
         if (!S_AXI_ARESETN) begin
             slv_reg0 <= 9600;
-            // slv_reg1 <= '0;
-            slv_reg2 <= '0;
+            // slv_reg1 <= 0;
+            slv_reg2 <= 0;
             baud_rate_reg <= 9600;
             data_ready <= 0;
             overrun_error <= 0;
@@ -116,8 +116,10 @@ module uart_axils #(
                 if (data_ready) begin
                     overrun_error <= 1'b1; // Перезапись непрочитанных данных
                 end
+                else begin
+                    data_ready <= 1'b1; // Установить флаг "данные готовы"
+                end
                 
-                data_ready <= 1'b1; // Установить флаг "данные готовы"
             end
             
             // Сброс флага data_ready при чтении регистра данных

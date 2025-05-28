@@ -1,3 +1,6 @@
+#!/bin/bash
+# chmod +x install_verilator.sh
+
 # Prerequisites:
 #sudo apt-get install git help2man perl python3 make autoconf g++ flex bison ccache
 #sudo apt-get install libgoogle-perftools-dev numactl perl-doc
