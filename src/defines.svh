@@ -1,0 +1,1 @@
+`define FIFO_MODE_SYNC

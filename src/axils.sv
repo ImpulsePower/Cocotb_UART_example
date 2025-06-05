@@ -1,14 +1,14 @@
 /*
 * Author: ImpulsePower
 * Date of creation: 15/02/2025
-* Description: Hardware description of UART interface receiver, 
+* Description: Hardware description of AXI Lite Slave, 
 * License:
 * Language: SystemVerilog 2012
 * History:
 
 */
 
-module uart_axils #(
+module axils #(
     parameter C_S_AXI_DATA_WIDTH = 32,
     parameter C_S_AXI_ADDR_WIDTH = 4,
     parameter CLK_FREQ = 100_000_000,
@@ -36,7 +36,7 @@ module uart_axils #(
     input   logic                               S_AXI_RREADY,
     
     // UART Interface
-    input wire                              UART_RX
+    input wire                                  UART_RX
 );
 
     // Internal signals
@@ -231,4 +231,4 @@ module uart_axils #(
     assign S_AXI_RRESP = 2'b00; // OKAY response
     assign S_AXI_RDATA = rdata_int;
     
-endmodule: uart_axils
+endmodule: axils

@@ -1,0 +1,20 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1749128057" />
+    <testcase name="test_fifo_basic_operations" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="14" time="0.0010526180267333984" sim_time_ns="30.001" ratio_time="28501.31694314836">
+      <failure message="Test failed with RANDOM_SEED=1749128057" />
+    </testcase>
+    <testcase name="test_fifo_full_condition" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="46" time="0.002210378646850586" sim_time_ns="190.001" ratio_time="85958.57559098264">
+      <failure message="Test failed with RANDOM_SEED=1749128057" />
+    </testcase>
+    <testcase name="test_fifo_simultaneous_read_write" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="74" time="0.0017294883728027344" sim_time_ns="120.00099999999998" ratio_time="69385.25976068375">
+      <failure message="Test failed with RANDOM_SEED=1749128057" />
+    </testcase>
+    <testcase name="test_fifo_random_operations" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="106" time="0.0008561611175537109" sim_time_ns="40.00100000000003" ratio_time="46721.34622779174">
+      <failure message="Test failed with RANDOM_SEED=1749128057" />
+    </testcase>
+    <testcase name="test_fifo_reset_behavior" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="144" time="0.0011205673217773438" sim_time_ns="60.000999999999976" ratio_time="53545.19878808509">
+      <failure message="Test failed with RANDOM_SEED=1749128057" />
+    </testcase>
+  </testsuite>
+</testsuites>

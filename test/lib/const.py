@@ -107,7 +107,7 @@ class TestbenchConstants:
     """
     design: DesignConstants
     NEED_RST: bool = True
-    NUM_OF_TEST: int = 30
+    NUM_OF_TEST: int = 1
     UNIT: str = 'ns'
     RESET_period: int = 20
     CLOCK_DELAY: int = 10

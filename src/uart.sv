@@ -6,7 +6,7 @@
 * Language: SystemVerilog 2012
 */
 
-module uart_top #(
+module uart #(
     parameter C_S_AXI_DATA_WIDTH = 32,
     parameter C_S_AXI_ADDR_WIDTH = 4,
     parameter CLK_FREQ = 100_000_000,
@@ -60,7 +60,7 @@ module uart_top #(
     logic clear_data_ready;
     
     // Instantiate AXI Lite interface
-    uart_axils #(
+    axils #(
         .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
         .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH),
         .CLK_FREQ(CLK_FREQ),
@@ -114,7 +114,7 @@ module uart_top #(
     );
     
     // Instantiate async FIFO
-    uart_rx_async_fifo #(
+    sync_fifo #(
         .DATA_WIDTH(UART_DATA_WIDTH),
         .FIFO_DEPTH(FIFO_DEPTH)
     ) uart_fifo (
@@ -139,8 +139,26 @@ module uart_top #(
     assign fifo_we = uart_rx_done && !fifo_full;
     assign fifo_re = clear_data_ready;  // Reading from FIFO when AXI reads data
     
-    // Status flags
-    assign overrun_error = uart_rx_done && fifo_full;  // Set overrun if FIFO is full when new data arrives
-    assign data_ready = !fifo_empty;    // Data is ready when FIFO is not empty
+// Connect AXI registers to FIFO
+    always_ff @(posedge S_AXI_ACLK) begin
+        if (!S_AXI_ARESETN) begin
+            baud_rate <= 9600;
+            data_ready <= 0;
+            overrun_error <= 0;
+        end else begin
+            // Update status flags based on FIFO state
+            if (fifo_we) begin
+                if (!fifo_empty) begin
+                    overrun_error <= 1'b1;
+                end
+                data_ready <= 1'b1;
+            end
+            
+            if (fifo_re) begin
+                data_ready <= !fifo_empty;
+                overrun_error <= 1'b0;
+            end
+        end
+    end
 
-endmodule: uart_top
+endmodule: uart

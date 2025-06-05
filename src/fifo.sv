@@ -1,13 +1,98 @@
 /*
 * Author: ImpulsePower
 * Date of creation: 14/05/2025
-* Description: Asynchronous FIFO for UART interface receiver
+* Description: Various FIFO for UART interface receiver
 * License:
 * Language: SystemVerilog 2012
 * History:
-*/
 
-module uart_rx_async_fifo #(
+*/
+// `include "defines.svh"
+`timescale 1ns/1ps
+
+`define FIFO_MODE_SYNC
+
+`ifdef FIFO_MODE_SYNC
+
+module fifo #(
+    parameter DATA_WIDTH = 8,               // ширина данных
+    parameter FIFO_DEPTH = 16,              // глубина FIFO (степень 2)
+    parameter LOG2_DEPTH = $clog2(FIFO_DEPTH)  // автоматический расчет глубины
+) (
+    input  logic                     CLKip,      // тактовый сигнал
+    input  logic                     RSTi,    // асинхронный сброс (активный 0)
+    input  logic                     WEi,    // разрешение записи
+    input  logic [DATA_WIDTH-1:0]    DATAi,  // входные данные
+    input  logic                     RDi,    // разрешение чтения
+    output logic [DATA_WIDTH-1:0]    DATAo, // выходные данные
+    output logic                     FULLo,     // флаг заполненности
+    output logic                     EMPTYo    // флаг пустоты
+);
+    logic [LOG2_DEPTH:0] cnt;
+    // Внутренняя память FIFO
+    logic [DATA_WIDTH-1:0] mem [0:FIFO_DEPTH-1];
+    
+    // Указатели записи и чтения
+    logic [LOG2_DEPTH-1:0] wr_ptr;
+    logic [LOG2_DEPTH-1:0] rd_ptr;
+    
+    // Счетчик элементов
+    logic [LOG2_DEPTH:0] next_count;
+    
+    // Логика указателей и счетчика
+    always_ff @(posedge CLKip or negedge RSTi) begin
+        if (!RSTi) begin
+            wr_ptr  <= '0;
+            rd_ptr  <= '0;
+            cnt   <= '0;
+        end else begin
+            // Обновление указателей и счетчика
+            case ({WEi, RDi})
+                2'b01: begin // только чтение
+                    rd_ptr  <= rd_ptr + 1;
+                    cnt   <= cnt - 1;
+                end
+                2'b10: begin // только запись
+                    wr_ptr  <= wr_ptr + 1;
+                    cnt   <= cnt + 1;
+                end
+                2'b11: begin // одновременная запись и чтение
+                    wr_ptr  <= wr_ptr + 1;
+                    rd_ptr  <= rd_ptr + 1;
+                    // cnt остается прежним
+                end
+                default: ; // ничего не делать
+            endcase
+        end
+    end
+    
+    // Запись данных
+    always_ff @(posedge CLKip) begin
+        if (WEi && !FULLo) begin
+            mem[wr_ptr] <= DATAi;
+        end
+    end
+    
+    // Чтение данных
+    always_ff @(posedge CLKip or negedge RSTi) begin
+        if (!RSTi) begin
+            DATAo <= '0;
+        end else if (RDi && !EMPTYo) begin
+            DATAo <= mem[rd_ptr];
+        end
+    end
+    
+    // Логика флагов состояния
+    assign FULLo  = (cnt == FIFO_DEPTH);
+    assign EMPTYo = (cnt == 0);
+    
+endmodule: fifo
+
+`endif
+
+`ifdef FIFO_MODE_ASYNC
+
+module async_fifo #(
     parameter DATA_WIDTH = 8,     // ширина данных (обычно 8 бит для UART)
     parameter FIFO_DEPTH = 16,    // глубина FIFO (должна быть степенью 2)
     parameter LOG2_DEPTH = $clog2(FIFO_DEPTH)  // автоматический расчет
@@ -125,4 +210,6 @@ module uart_rx_async_fifo #(
     // Read data (combinational)
     assign RDo = mem[rd_ptr[LOG2_DEPTH-1:0]];
 
-endmodule: uart_rx_async_fifo
+endmodule: async_fifo
+
+`endif

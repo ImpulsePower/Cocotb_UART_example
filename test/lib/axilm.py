@@ -9,31 +9,31 @@ class AXI4LiteMaster:
         self.prefix = prefix
         
         # Адресные сигналы
-        self.awaddr = getattr(dut, f"{prefix}awaddr")
-        self.awvalid = getattr(dut, f"{prefix}awvalid")
-        self.awready = getattr(dut, f"{prefix}awready")
+        self.awaddr = getattr(dut, f"{prefix}AWADDR")
+        self.awvalid = getattr(dut, f"{prefix}AWVALID")
+        self.awready = getattr(dut, f"{prefix}AWREADY")
         
         # Данные записи
-        self.wdata = getattr(dut, f"{prefix}wdata")
-        self.wstrb = getattr(dut, f"{prefix}wstrb")
-        self.wvalid = getattr(dut, f"{prefix}wvalid")
-        self.wready = getattr(dut, f"{prefix}wready")
+        self.wdata = getattr(dut, f"{prefix}WDATA")
+        self.wstrb = getattr(dut, f"{prefix}WSTRB")
+        self.wvalid = getattr(dut, f"{prefix}WVALID")
+        self.wready = getattr(dut, f"{prefix}WREADY")
         
         # Ответ записи
-        self.bresp = getattr(dut, f"{prefix}bresp")
-        self.bvalid = getattr(dut, f"{prefix}bvalid")
-        self.bready = getattr(dut, f"{prefix}bready")
+        self.bresp = getattr(dut, f"{prefix}BRESP")
+        self.bvalid = getattr(dut, f"{prefix}BVALID")
+        self.bready = getattr(dut, f"{prefix}BREADY")
         
         # Адрес чтения
-        self.araddr = getattr(dut, f"{prefix}araddr")
-        self.arvalid = getattr(dut, f"{prefix}arvalid")
-        self.arready = getattr(dut, f"{prefix}arready")
+        self.araddr = getattr(dut, f"{prefix}ARADDR")
+        self.arvalid = getattr(dut, f"{prefix}ARVALID")
+        self.arready = getattr(dut, f"{prefix}ARREADY")
         
         # Данные чтения
-        self.rdata = getattr(dut, f"{prefix}rdata")
-        self.rresp = getattr(dut, f"{prefix}rresp")
-        self.rvalid = getattr(dut, f"{prefix}rvalid")
-        self.rready = getattr(dut, f"{prefix}rready")
+        self.rdata = getattr(dut, f"{prefix}RDATA")
+        self.rresp = getattr(dut, f"{prefix}RRESP")
+        self.rvalid = getattr(dut, f"{prefix}RVALID")
+        self.rready = getattr(dut, f"{prefix}RREADY")
     
     async def write(self, addr, data, strb=0xF):
         """Выполнить запись по AXI Lite"""
@@ -61,7 +61,6 @@ class AXI4LiteMaster:
             await RisingEdge(self.dut.clk)
         resp = self.bresp.value
         self.bready.value = 0
-        
         return resp
     
     async def read(self, addr):
@@ -82,5 +81,4 @@ class AXI4LiteMaster:
         data = self.rdata.value
         resp = self.rresp.value
         self.rready.value = 0
-        
         return data, resp

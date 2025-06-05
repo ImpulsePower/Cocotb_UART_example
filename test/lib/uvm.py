@@ -16,6 +16,7 @@ from cocotb.triggers import Timer, RisingEdge, Edge, Event
 
 from lib.const import *
 from lib.transaction import *
+# from cocotbext.axi import AxiLiteBus, AxiLiteMaster
 
 class TB:
     """

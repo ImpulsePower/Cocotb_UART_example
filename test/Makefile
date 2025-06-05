@@ -4,7 +4,9 @@ TOPLEVEL_LANG ?= verilog
 VERILOG_SOURCES += $(PWD)/../src/$(TOPLEVEL).sv $(PWD)/../src/sync.sv $(PWD)/../src/uart_rx_mem.sv
 
 TOPLEVEL = uart_rx
-MODULE = test_$(TOPLEVEL)
+TEST = uart
+# MODULE = test_$(TOPLEVEL)
+MODULE = test_$(TEST)
 
 COCOTB_RESULTS_FILE = $(PWD)/../temp/res_$(TOPLEVEL).xml
 COCOTB_HDL_TIMEUNIT = 1ns

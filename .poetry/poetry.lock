@@ -74,6 +74,39 @@ find-libpython = "*"
 bus = ["cocotb-bus"]
 
 [[package]]
+name = "cocotb-bus"
+version = "0.2.1"
+description = ""
+optional = false
+python-versions = ">=3.5"
+groups = ["main"]
+files = [
+    {file = "cocotb-bus-0.2.1.tar.gz", hash = "sha256:a197aa4b0e0ad28469c8877b41b3fb2ec0206da9f491b9276d1578ce6dd8aa8d"},
+]
+
+[package.dependencies]
+cocotb = ">=1.5.0.dev,<2.0"
+
+[[package]]
+name = "cocotbext-axi"
+version = "0.1.24"
+description = "AXI, AXI lite, and AXI stream modules for cocotb"
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "cocotbext-axi-0.1.24.tar.gz", hash = "sha256:3ed62dcaf9448833176826507c5bc5c346431c4846a731e409d87c862d960593"},
+    {file = "cocotbext_axi-0.1.24-py3-none-any.whl", hash = "sha256:533ba6c7503c6302bdb9ef86e43a549ad5da876eafb1adce23d39751c54cced4"},
+]
+
+[package.dependencies]
+cocotb = ">=1.6.0"
+cocotb-bus = "*"
+
+[package.extras]
+test = ["cocotb-test", "pytest"]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -344,4 +377,4 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "virtualenv"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "2f67733141f02f3950ca29e2695c0bf8cb6a86e491d9502e221efa3ca222aaf9"
+content-hash = "20b01396912ea8b919ec363b81998c09a88cd23b630045f7de00ffa69a78c786"
