@@ -1,7 +1,8 @@
 /*
 * Author: ImpulsePower
 * Date of creation: [Current Date]
-* Description: Top-level module connecting UART receiver, async FIFO and AXI Lite interface
+* Description: Top-level module connecting UART receiver, async FIFO and 
+* AXI Lite interface
 * License:
 * Language: SystemVerilog 2012
 */
@@ -35,7 +36,7 @@ module uart #(
     input   logic                               S_AXI_RREADY,
     
     // UART Interface
-    input wire                              UART_RX
+    input   wire                                UART_RX
 );
 
     // Internal signals
@@ -61,78 +62,78 @@ module uart #(
     
     // Instantiate AXI Lite interface
     axils #(
-        .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
-        .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH),
-        .CLK_FREQ(CLK_FREQ),
-        .DATA_WIDTH(UART_DATA_WIDTH)
+        .C_S_AXI_DATA_WIDTH (C_S_AXI_DATA_WIDTH),
+        .C_S_AXI_ADDR_WIDTH (C_S_AXI_ADDR_WIDTH),
+        .CLK_FREQ           (CLK_FREQ),
+        .DATA_WIDTH         (UART_DATA_WIDTH)
     ) uart_axi (
-        .S_AXI_ACLK(S_AXI_ACLK),
-        .S_AXI_ARESETN(S_AXI_ARESETN),
-        .S_AXI_AWADDR(S_AXI_AWADDR),
-        .S_AXI_AWVALID(S_AXI_AWVALID),
-        .S_AXI_AWREADY(S_AXI_AWREADY),
-        .S_AXI_WDATA(S_AXI_WDATA),
-        .S_AXI_WSTRB(S_AXI_WSTRB),
-        .S_AXI_WVALID(S_AXI_WVALID),
-        .S_AXI_WREADY(S_AXI_WREADY),
-        .S_AXI_BRESP(S_AXI_BRESP),
-        .S_AXI_BVALID(S_AXI_BVALID),
-        .S_AXI_BREADY(S_AXI_BREADY),
-        .S_AXI_ARADDR(S_AXI_ARADDR),
-        .S_AXI_ARVALID(S_AXI_ARVALID),
-        .S_AXI_ARREADY(S_AXI_ARREADY),
-        .S_AXI_RDATA(S_AXI_RDATA),
-        .S_AXI_RRESP(S_AXI_RRESP),
-        .S_AXI_RVALID(S_AXI_RVALID),
-        .S_AXI_RREADY(S_AXI_RREADY),
-        .UART_RX(UART_RX),
+        .S_AXI_ACLK         (S_AXI_ACLK),
+        .S_AXI_ARESETN      (S_AXI_ARESETN),
+        .S_AXI_AWADDR       (S_AXI_AWADDR),
+        .S_AXI_AWVALID      (S_AXI_AWVALID),
+        .S_AXI_AWREADY      (S_AXI_AWREADY),
+        .S_AXI_WDATA        (S_AXI_WDATA),
+        .S_AXI_WSTRB        (S_AXI_WSTRB),
+        .S_AXI_WVALID       (S_AXI_WVALID),
+        .S_AXI_WREADY       (S_AXI_WREADY),
+        .S_AXI_BRESP        (S_AXI_BRESP),
+        .S_AXI_BVALID       (S_AXI_BVALID),
+        .S_AXI_BREADY       (S_AXI_BREADY),
+        .S_AXI_ARADDR       (S_AXI_ARADDR),
+        .S_AXI_ARVALID      (S_AXI_ARVALID),
+        .S_AXI_ARREADY      (S_AXI_ARREADY),
+        .S_AXI_RDATA        (S_AXI_RDATA),
+        .S_AXI_RRESP        (S_AXI_RRESP),
+        .S_AXI_RVALID       (S_AXI_RVALID),
+        .S_AXI_RREADY       (S_AXI_RREADY),
+        // .UART_RX            (UART_RX),
         
         // Internal connections
-        .baud_rate_reg(baud_rate),
-        .rx_data(fifo_rdata),
-        .rx_done(!fifo_empty),
-        .rx_ready(fifo_re),
-        .data_ready(data_ready),
-        .overrun_error(overrun_error),
-        .clear_data_ready(clear_data_ready)
+        .baud_rate_reg      (baud_rate),
+        .rx_data            (fifo_rdata),
+        .rx_done            (!fifo_empty),
+        .rx_ready           (fifo_re),
+        .data_ready         (data_ready),
+        .overrun_error      (overrun_error),
+        .clear_data_ready   (clear_data_ready)
     );
     
     // Instantiate UART receiver
     uart_rx #(
-        .FREQ_CLK(CLK_FREQ),
-        .DATA_WDTH(UART_DATA_WIDTH)
+        .FREQ_CLK           (CLK_FREQ),
+        .DATA_WDTH          (UART_DATA_WIDTH)
     ) uart_receiver (
-        .CLKip(S_AXI_ACLK),
-        .RSTi(~S_AXI_ARESETN),
-        .RXi(UART_RX),
+        .CLKip              (S_AXI_ACLK),
+        .RSTi               (~S_AXI_ARESETN),
+        .RXi                (UART_RX),
         .BAUD_RATE_RDi(1'b0),  // Not used in this configuration
         .BAUD_RATE_WEi(1'b0),  // Not used in this configuration
-        .BAUD_RATEi(baud_rate),
-        .DONEo(uart_rx_done),
-        .READYo(uart_rx_ready),
-        .DATAo(uart_rx_data)
+        .BAUD_RATEi         (baud_rate),
+        .DONEo              (uart_rx_done),
+        .READYo             (uart_rx_ready),
+        .DATAo              (uart_rx_data)
     );
     
     // Instantiate async FIFO
     sync_fifo #(
-        .DATA_WIDTH(UART_DATA_WIDTH),
-        .FIFO_DEPTH(FIFO_DEPTH)
+        .DATA_WIDTH         (UART_DATA_WIDTH),
+        .FIFO_DEPTH         (FIFO_DEPTH)
     ) uart_fifo (
         // Write domain (UART RX side)
-        .WCLK(S_AXI_ACLK),
-        .WRST(~S_AXI_ARESETN),
-        .WEi(uart_rx_done),
-        .WDi(uart_rx_data),
-        .FULLo(fifo_full),
-        .AFULLo(fifo_afull),
+        .WCLK               (S_AXI_ACLK),
+        .WRST               (~S_AXI_ARESETN),
+        .WEi                (uart_rx_done),
+        .WDi                (uart_rx_data),
+        .FULLo              (fifo_full),
+        .AFULLo             (fifo_afull),
         
         // Read domain (AXI side)
-        .RCLK(S_AXI_ACLK),
-        .RRST(~S_AXI_ARESETN),
-        .REi(fifo_re),
-        .RDo(fifo_rdata),
-        .EMPTYo(fifo_empty),
-        .AEMPTYo(fifo_aempty)
+        .RCLK               (S_AXI_ACLK),
+        .RRST               (~S_AXI_ARESETN),
+        .REi                (fifo_re),
+        .RDo                (fifo_rdata),
+        .EMPTYo             (fifo_empty),
+        .AEMPTYo            (fifo_aempty)
     );
     
     // Control logic

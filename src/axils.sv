@@ -33,10 +33,10 @@ module axils #(
     output  logic [C_S_AXI_DATA_WIDTH-1:0]      S_AXI_RDATA,
     output  logic [1:0]                         S_AXI_RRESP,
     output  logic                               S_AXI_RVALID,
-    input   logic                               S_AXI_RREADY,
+    input   logic                               S_AXI_RREADY
     
     // UART Interface
-    input wire                                  UART_RX
+    // input wire                                  UART_RX
 );
 
     // Internal signals

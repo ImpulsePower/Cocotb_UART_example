@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from os import getenv
 from cocotb.runner import get_runner
@@ -94,7 +93,33 @@ def test_axils():
         test_module=module,
         build_dir=sim_build,
     )
-    
+
+def test_uart():
+    dut = "uart"
+    module = "test_uart"
+    sim_build = "sim_build"
+    proj_path = Path().resolve().parent
+    sources = [proj_path/'src'/"uart.sv",
+                proj_path/'src'/"uart_rx.sv",
+                proj_path/'src'/"fifo.sv",
+                proj_path/'src'/"sync.sv",
+                proj_path/'src'/"uart_rx_mem.sv"
+                ]
+    extra_args = ["-Iincdir"]  # Если есть дополнительные include-директории
+
+    runner = get_runner("icarus")  # Или другой симулятор (VCS, Verilator)
+    runner.build(
+        verilog_sources=sources,
+        includes=extra_args,
+        hdl_toplevel=dut,
+        build_dir=sim_build,
+    )
+    runner.test(
+        hdl_toplevel=dut,
+        test_module=module,
+        build_dir=sim_build,
+    )
+
 def main():
     test_dict = {
         "uart_rx": "test_uart,"
