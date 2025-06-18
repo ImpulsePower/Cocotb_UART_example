@@ -257,13 +257,16 @@ class Driver:
 
     async def start(self,
                     sig_name: str = "RXi", 
-                    baud_rate: str = "BAUD_RATEi"
+                    baud_rate: str = "BAUD_RATEi",
+                    read: str = "RDi"
                     ):
         for tr in self.trs:
             self.scr.interface_drv_scr(tr)
             getattr(self.dut, baud_rate).value = getattr(tr,baud_rate)
             getattr(self.dut, sig_name).value = getattr(tr,sig_name)
             await Timer(tr.set_time, units=self.tbc.UNIT)
+        # self.dut.RDi.value = 1
+        self.log.info("Set!")
         self.done.set()
 
     def stop(self) -> None:

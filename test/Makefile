@@ -1,17 +1,15 @@
 # Makefile
 PWD=$(shell pwd)
 TOPLEVEL_LANG ?= verilog
-VERILOG_SOURCES += $(PWD)/../src/$(TOPLEVEL).sv $(PWD)/../src/sync.sv $(PWD)/../src/uart_rx_mem.sv
-
-TOPLEVEL = uart_rx
+TOPLEVEL = uart
 TEST = uart
-# MODULE = test_$(TOPLEVEL)
 MODULE = test_$(TEST)
+VERILOG_SOURCES += $(PWD)/../src/$(TOPLEVEL).sv $(PWD)/../src/$(TOPLEVEL)_rx.sv $(PWD)/../src/sync.sv $(PWD)/../src/uart_rx_mem.sv $(PWD)/../src/fifo.sv
 
 COCOTB_RESULTS_FILE = $(PWD)/../temp/res_$(TOPLEVEL).xml
 COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ps
-
+WAVES=1
 all=icarus
 # Правило для Icarus Verilog
 icarus:
@@ -20,6 +18,7 @@ icarus:
 	VERILOG_SOURCES="$(VERILOG_SOURCES)" \
 	TOPLEVEL="$(TOPLEVEL)" \
 	MODULE="$(MODULE)" \
+	WAVES=1 \
 	SIM_BUILD=$(PWD)/../test/build/$(TOPLEVEL)/icarus \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 

@@ -42,8 +42,18 @@ def print_dut_structure(dut, indent=0):
         else:
             print("  " * indent + f"├─ {name} ({type(obj).__name__})")
 
+# @cocotb.test()
+# async def test_uart_rx(dut,sig_in="RXi",sig_out="DATAo"):
+#     """
+#     Args: sig_in : "RXi" sig_out : "DATAo"
+#     """
+#     tb = TB(dut)
+#     tb.setup(sig_in,sig_out)
+#     await tb.start()
+#     await tb.stop()
+
 @cocotb.test()
-async def test_uart_rx(dut,sig_in="RXi",sig_out="DATAo"):
+async def test_uart(dut,sig_in="RXi",sig_out="DATAo"):
     """
     Args: sig_in : "RXi" sig_out : "DATAo"
     """
@@ -52,16 +62,16 @@ async def test_uart_rx(dut,sig_in="RXi",sig_out="DATAo"):
     await tb.start()
     await tb.stop()
 
-@cocotb.test()
-async def test_uart_tx(dut,sig_in="TXi",sig_out="DATAo"):
-    """
-    Args: sig_in : "TXi" sig_out : "DATAo"
-    """
-    # tb = TB(dut)
-    # tb.setup(sig_in,sig_out)
-    # await tb.start()
-    # await tb.stop()
-    ...
+# @cocotb.test()
+# async def test_uart_tx(dut,sig_in="TXi",sig_out="DATAo"):
+#     """
+#     Args: sig_in : "TXi" sig_out : "DATAo"
+#     """
+#     # tb = TB(dut)
+#     # tb.setup(sig_in,sig_out)
+#     # await tb.start()
+#     # await tb.stop()
+#     ...
 
 # if __name__ == "__main__":
 # if cocotb.SIM_NAME:

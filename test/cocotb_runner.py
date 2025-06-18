@@ -94,46 +94,49 @@ def test_axils():
         build_dir=sim_build,
     )
 
-def test_uart():
-    dut = "uart"
-    module = "test_uart"
-    sim_build = "sim_build"
+def test_uart(top,test):
+    # proj_path = Path(__file__).resolve().parent
     proj_path = Path().resolve().parent
-    sources = [proj_path/'src'/"uart.sv",
+    hdl_toplevel_lang = getenv("HDL_TOPLEVEL_LANG", "verilog")
+    sim = getenv("SIM", "icarus")
+    build = f"{proj_path}/test/build/icarus"
+    test_dir = test.replace(',','').split('_')[1]
+    if hdl_toplevel_lang == "verilog":
+        # verilog_sources = [proj_path / "uart_rx.sv"]
+        src = [proj_path/'src'/"uart.sv",
                 proj_path/'src'/"uart_rx.sv",
-                proj_path/'src'/"fifo.sv",
                 proj_path/'src'/"sync.sv",
-                proj_path/'src'/"uart_rx_mem.sv"
+                proj_path/'src'/"uart_rx_mem.sv",
+                proj_path/'src'/"fifo.sv"
                 ]
-    extra_args = ["-Iincdir"]  # Если есть дополнительные include-директории
 
-    runner = get_runner("icarus")  # Или другой симулятор (VCS, Verilator)
+    runner = get_runner(sim)
     runner.build(
-        verilog_sources=sources,
-        includes=extra_args,
-        hdl_toplevel=dut,
-        build_dir=sim_build,
+        verilog_sources=src,
+        hdl_toplevel=top,
+        build_dir=f'{build}/{test_dir}',
+        always=True,
     )
     runner.test(
-        hdl_toplevel=dut,
-        test_module=module,
-        build_dir=sim_build,
-    )
+                hdl_toplevel=top, 
+                test_module=test,
+                waves=True
+        )
 
 def main():
-    test_dict = {
-        "uart_rx": "test_uart,"
-    }
-    print(pytest.__file__)  # Should point to site-packages, not a local file
-    for key,value in test_dict.items():
-        test_uart_runner(key,value)
+    # test_dict = {
+    #     "uart_rx": "test_uart,"
+    # }
+    # print(pytest.__file__)  # Should point to site-packages, not a local file
+    # for key,value in test_dict.items():
+    #     test_uart_runner(key,value)
 
     test_dict = {
-        "fifo": "test_fifo,"
+        "uart": "test_uart,"
     }
     print(pytest.__file__)  # Should point to site-packages, not a local file
     for key,value in test_dict.items():
-        test_fifo_runner(key,value)
+        test_uart(key,value)
 
 if __name__ == "__main__":
     main()
