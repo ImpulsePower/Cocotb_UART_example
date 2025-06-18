@@ -266,7 +266,7 @@ class Driver:
             getattr(self.dut, sig_name).value = getattr(tr,sig_name)
             await Timer(tr.set_time, units=self.tbc.UNIT)
         # self.dut.RDi.value = 1
-        self.log.info("Set!")
+        
         self.done.set()
 
     def stop(self) -> None:
@@ -323,6 +323,7 @@ class Monitor:
         self.out_value = getattr(dut, self.sig_out).value
         self.scr.interface_mon_scr(self.out_value)
         self.done.set()
+        self.log.info("Set!")
 
     def stop(self) -> None:
         """

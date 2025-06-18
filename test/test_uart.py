@@ -61,7 +61,7 @@ async def test_uart(dut,sig_in="RXi",sig_out="DATAo"):
     tb.setup(sig_in,sig_out)
     await tb.start()
     await tb.stop()
-
+    
 # @cocotb.test()
 # async def test_uart_tx(dut,sig_in="TXi",sig_out="DATAo"):
 #     """
