@@ -80,6 +80,13 @@ class TB:
         cocotb.start_soon(self.monitor.start(sig=self._sig_out))
         # await self.driver.start()
         # await self.monitor.start(self._sig_out)
+
+        # read: str = "RDi"
+        # self.log.debug(f"Trying to set signal: {read}")  # Должно вывести "RDi"
+        # if not hasattr(self.dut, read):
+        #     self.log.error(f"Signal {read} not found in DUT!")
+        # getattr(self.dut, read).value = 1
+
         await self.driver_done.wait()
         await self.monitor_done.wait()
         await self.scoreboard.start(id=self.transaction_id)
@@ -194,7 +201,8 @@ class Sequencer:
             self.transaction.forge(
                 br=br, 
                 rx=rx, 
-                tm=tm
+                tm=tm,
+                rd=1
                 )
             self.transaction.add(i)
         return self.transaction.get()
@@ -264,9 +272,8 @@ class Driver:
             self.scr.interface_drv_scr(tr)
             getattr(self.dut, baud_rate).value = getattr(tr,baud_rate)
             getattr(self.dut, sig_name).value = getattr(tr,sig_name)
+            getattr(self.dut, read).value = getattr(tr,read)
             await Timer(tr.set_time, units=self.tbc.UNIT)
-        # self.dut.RDi.value = 1
-        
         self.done.set()
 
     def stop(self) -> None:
@@ -319,11 +326,13 @@ class Monitor:
         
         dut = dut_interface if dut_interface is not None else self.dut
         self._set_out(sig)
+        # self.log.info(f'Done: {self.dut.DONEo.value}')
+        self.log.info(f'RDi: {self.dut.RDi.value}')
         await RisingEdge(dut.DONEo)
         self.out_value = getattr(dut, self.sig_out).value
         self.scr.interface_mon_scr(self.out_value)
         self.done.set()
-        self.log.info("Set!")
+        
 
     def stop(self) -> None:
         """

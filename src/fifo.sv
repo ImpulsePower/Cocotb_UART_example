@@ -10,83 +10,64 @@
 // `include "defines.svh"
 `timescale 1ns/1ps
 
-`define FIFO_MODE_2PORT
+`define FIFO_MODE_SYNC
 
 `ifdef FIFO_MODE_SYNC
 
 module fifo #(
-    parameter DATA_WIDTH = 8,               // ширина данных
-    parameter FIFO_DEPTH = 16,              // глубина FIFO (степень 2)
-    parameter LOG2_DEPTH = $clog2(FIFO_DEPTH)  // автоматический расчет глубины
+    parameter DATA_WIDTH = 8,
+    parameter FIFO_DEPTH = 16,
+    parameter LOG2_DEPTH = $clog2(FIFO_DEPTH)
 ) (
-    input  logic                     CLKip,      // тактовый сигнал
-    input  logic                     RSTi,    // асинхронный сброс (активный 0)
-    input  logic                     WEi,    // разрешение записи
-    input  logic [DATA_WIDTH-1:0]    DATAi,  // входные данные
-    input  logic                     RDi,    // разрешение чтения
-    output logic [DATA_WIDTH-1:0]    DATAo, // выходные данные
-    output logic                     FULLo,     // флаг заполненности
-    output logic                     EMPTYo    // флаг пустоты
+    input  logic                     CLKip,
+    input  logic                     RSTi,
+    input  logic                     WEi,
+    input  logic [DATA_WIDTH-1:0]    DATAi,
+    input  logic                     RDi,
+    output logic [DATA_WIDTH-1:0]    DATAo,
+    output logic                     FULLo,
+    output logic                     EMPTYo
 );
-    logic [LOG2_DEPTH:0] cnt;
-    // Внутренняя память FIFO
-    logic [DATA_WIDTH-1:0] mem [0:FIFO_DEPTH-1];
-    
-    // Указатели записи и чтения
+
+    logic [DATA_WIDTH-1:0] memory [0:FIFO_DEPTH-1];
+    logic [LOG2_DEPTH:0]   count;
     logic [LOG2_DEPTH-1:0] wr_ptr;
     logic [LOG2_DEPTH-1:0] rd_ptr;
-    
-    // Счетчик элементов
-    logic [LOG2_DEPTH:0] next_count;
-    
-    // Логика указателей и счетчика
-    always_ff @(posedge CLKip or negedge RSTi) begin
-        if (!RSTi) begin
-            wr_ptr  <= '0;
-            rd_ptr  <= '0;
-            cnt   <= '0;
+
+    always_ff @(posedge CLKip or posedge RSTi) begin
+        if (RSTi) begin
+            wr_ptr <= '0;
+            rd_ptr <= '0;
+            count  <= '0;
         end else begin
-            // Обновление указателей и счетчика
-            case ({WEi, RDi})
-                2'b01: begin // только чтение
-                    rd_ptr  <= rd_ptr + 1;
-                    cnt   <= cnt - 1;
-                end
-                2'b10: begin // только запись
-                    wr_ptr  <= wr_ptr + 1;
-                    cnt   <= cnt + 1;
-                end
-                2'b11: begin // одновременная запись и чтение
-                    wr_ptr  <= wr_ptr + 1;
-                    rd_ptr  <= rd_ptr + 1;
-                    // cnt остается прежним
-                end
-                default: ; // ничего не делать
+            // Write operation
+            if (WEi && !FULLo) begin
+                memory[wr_ptr] <= DATAi;
+                wr_ptr <= wr_ptr + 1;
+            end
+
+            // Read operation
+            if (RDi && !EMPTYo) begin
+                rd_ptr <= rd_ptr + 1;
+            end
+
+            // Update count
+            case ({WEi && !FULLo, RDi && !EMPTYo})
+                2'b01:   count <= count - 1;
+                2'b10:   count <= count + 1;
+                default: count <= count;
             endcase
         end
     end
-    
-    // Запись данных
-    always_ff @(posedge CLKip) begin
-        if (WEi && !FULLo) begin
-            mem[wr_ptr] <= DATAi;
-        end
-    end
-    
-    // Чтение данных
-    always_ff @(posedge CLKip or negedge RSTi) begin
-        if (!RSTi) begin
-            DATAo <= '0;
-        end else if (RDi && !EMPTYo) begin
-            DATAo <= mem[rd_ptr];
-        end
-    end
-    
-    // Логика флагов состояния
-    assign FULLo  = (cnt == FIFO_DEPTH);
-    assign EMPTYo = (cnt == 0);
-    
-endmodule: fifo
+
+    // Output data (combinational read)
+    assign DATAo = memory[rd_ptr];
+
+    // Status flags
+    assign FULLo  = (count == FIFO_DEPTH);
+    assign EMPTYo = (count == 0);
+
+endmodule : fifo
 
 `endif
 

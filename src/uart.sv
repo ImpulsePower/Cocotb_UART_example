@@ -15,7 +15,7 @@ module uart #(
     input  logic                    BAUD_RATE_RDi, // Разрешение чтения скорости
     // FIFO интерфейс
     output logic                    DONEo,
-    input  logic                    RDi,    // Разрешение чтения из FIFO
+    // input  logic                    RDi,    // Разрешение чтения из FIFO
     output logic [DATA_WIDTH-1:0]   DATAo, // Данные из FIFO
     output logic                    EMPTYo,  // Флаг пустоты FIFO
     output logic                    FULLo    // Флаг переполнения FIFO
@@ -26,6 +26,12 @@ module uart #(
     logic [DATA_WIDTH-1:0] data;
     logic done;
     logic ready;
+
+    logic RDi;
+    always_ff @(posedge CLKip) begin
+        RDi <= 1;
+        DONEo <=done;
+    end
 
     // Экземпляр UART приемника
     uart_rx #(
@@ -44,7 +50,7 @@ module uart #(
     );
 
     // Экземпляр FIFO (синхронная версия)
-    DualPortFIFO #(
+    fifo #(
         .DATA_WIDTH     (DATA_WIDTH),
         .FIFO_DEPTH     (FIFO_DEPTH)
     ) fifo_inst (
@@ -60,4 +66,5 @@ module uart #(
         .EMPTYo         (EMPTYo)    // Флаг пустоты
     );
 
+    
 endmodule: uart

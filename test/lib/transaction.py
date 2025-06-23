@@ -31,6 +31,7 @@ class transactions:
         self.BAUD_RATEi: int = self.config.default_baud_rate
         self.RXi: int = 0
         self.DATAo: int = 0
+        self.RDi: int = 0
         self.set_time: int = 0
 
     def set_baud_rate(self, rate: int) -> None:
@@ -67,6 +68,14 @@ class transactions:
             time: The timestamp value to set for the transaction.
         """
         self.set_time = time
+
+    def set_RDi_transaction(self, RDi: int) -> None:
+        """Sets the transaction timestamp.
+
+        Args:
+            time: The timestamp value to set for the transaction.
+        """
+        self.RDi = RDi
 
     def __repr__(self) -> str:
         """Returns a string representation of the transaction object.
@@ -123,7 +132,7 @@ class UART_Transaction:
         self.blank: transactions = transactions(config)
         self.packet: List[Optional[transactions]] = [None] * (self.dc.DATA_WIDTH+2)
 
-    def forge(self,br,rx,tm):
+    def forge(self,br,rx,tm,rd):
         """Configures the blank transaction template with provided values.
         
         Args:
@@ -134,6 +143,7 @@ class UART_Transaction:
         self.blank.set_baud_rate(br)
         self.blank.set_rx_data(rx)
         self.blank.set_time_transaction(tm)
+        self.blank.set_RDi_transaction(rd)
         
     def add(self,index):
         """Adds the current blank transaction to the specified packet index.
