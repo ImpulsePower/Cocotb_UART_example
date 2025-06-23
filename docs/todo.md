@@ -9,6 +9,3 @@
 0. Разбор BFM
 1. Дизайн
 2. Встраивание
-
-# manta
-<!-- https://github.com/fischermoseley/manta -->

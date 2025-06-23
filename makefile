@@ -39,6 +39,12 @@ endif
 # ==============================================================
 
 # ========================== PATHS =============================
+# Paths of Pandoc
+MD_SRC_DIR = docs
+PDF_DIR = $(MD_SRC_DIR)/pdf
+MD_FILES = $(wildcard $(MD_SRC_DIR)/*.md)
+
+# Paths of D2
 D2_SRC_DIR = docs/content
 D2_OUT_DIR = docs/img
 D2_SOURCES = $(shell find $(D2_SRC_DIR) -name '*.d2')
@@ -46,32 +52,42 @@ D2_SOURCES = $(shell find $(D2_SRC_DIR) -name '*.d2')
 # Design
 COCOTB_BUILD = test/build
 TOPLEVEL_FIFO = fifo
-TEST_FIFO_SOURCES = $(PWD)/../src/$(TOPLEVEL_FIFO).sv
+TEST_FIFO_SOURCES = $(PWD)/src/$(TOPLEVEL_FIFO).sv
 
 TOPLEVEL_RX = uart_rx
-TEST_RX_SOURCES = 	$(PWD)/../src/$(TOPLEVEL_RX).sv \
-					$(PWD)/../src/sync.sv \
-					$(PWD)/../src/$(TOPLEVEL_RX)_mem.sv
+TEST_RX_SOURCES = 	$(PWD)/src/$(TOPLEVEL_RX).sv \
+					$(PWD)/src/sync.sv \
+					$(PWD)/src/$(TOPLEVEL_RX)_mem.sv
 
 TOPLEVEL_TX = uart_tx
-TEST_TX_SOURCES = 	$(PWD)/../src/$(TOPLEVEL_TX).sv \
-					$(PWD)/../src/sync.sv
+TEST_TX_SOURCES = 	$(PWD)/src/$(TOPLEVEL_TX).sv \
+					$(PWD)/src/sync.sv
 
 TOPLEVEL_AXI = axils
-TEST_AXI_SOURCES =	$(PWD)/../src/$(TOPLEVEL_AXI).sv
+TEST_AXI_SOURCES =	$(PWD)/src/$(TOPLEVEL_AXI).sv
 
 TOPLEVEL_UART = uart
 TEST_UART_SOURCES =	$(sort \
-					$(PWD)/../src/$(TOPLEVEL_UART).sv \
+					$(PWD)/src/$(TOPLEVEL_UART).sv \
     				$(TEST_FIFO_SOURCES) \
     				$(TEST_RX_SOURCES) \
     				$(TEST_TX_SOURCES) \
     				$(TEST_AXI_SOURCES))		
 
-SIM_BUILD = $(PWD)/../test/build/$(TOPLEVEL_TX)/$(SIM)
+SIM_BUILD = $(PWD)/test/build/$(TOPLEVEL_TX)/$(SIM)
 # ==============================================================
 
 # ========================= RULES ==============================
+# Pandoc rules
+PANDOC = pandoc
+PANDOC_OPTS = --pdf-engine=xelatex 
+PANDOC_OPTS += -V mainfont="DejaVu Sans"
+PANDOC_OPTS += -V geometry:margin=2cm
+
+$(PDF_DIR)/%.pdf: $(MD_SRC_DIR)/%.md
+	@mkdir -p $(PDF_DIR)
+	$(PANDOC) $< -o $@ $(PANDOC_OPTS)
+
 # Compile rules for .d2 in .svg or some else format...
 # D2 Compiler: https://d2lang.com/tour/install
 D2 = d2
@@ -81,7 +97,7 @@ $(D2_OUT_DIR)/%.$(FORMAT): $(D2_SRC_DIR)/%.d2
 
 # Cocotb rules
 # WAVE=1
-COCOTB_RESULTS_FILE = $(PWD)/../temp/res_$(TOPLEVEL).xml
+COCOTB_RESULTS_FILE = $(PWD)/temp/res_$(TOPLEVEL).xml
 COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ps
 # EXTRA_ARGS=--trace --coverage
@@ -90,6 +106,11 @@ COCOTB_HDL_TIMEPRECISION = 1ps
 # ========================= TARGETS ============================
 # Default target
 all: docs_d2
+
+# Generate pdf files from Markdown
+docs_pdf: $(patsubst $(MD_SRC_DIR)/%.md, \
+			$(PDF_DIR)/%.pdf, \
+			$(MD_FILES))
 
 # Generate images from d2 schemes
 docs_d2: $(patsubst $(D2_SRC_DIR)/%.d2, \
@@ -150,11 +171,13 @@ test_uart:
 clean:
 	rm -rf $(shell find $(D2_OUT_DIR) -name '*.$(FORMAT)')
 	rm -rf $(COCOTB_BUILD)/*
+	rm -rf $(PDF_DIR)/*
 
 # Clearing folders of generated files
-clean_out:
+clean_folder:
 	rm -rf $(D2_OUT_DIR)
 	rm -rf $(COCOTB_BUILD)
+	rm -rf $(PDF_DIR)
 	
 .PHONY: all clean
 # ==============================================================
