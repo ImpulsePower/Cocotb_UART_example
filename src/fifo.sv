@@ -10,7 +10,7 @@
 // `include "defines.svh"
 `timescale 1ns/1ps
 
-`define FIFO_MODE_SYNC
+`define FIFO_MODE_2PORT
 
 `ifdef FIFO_MODE_SYNC
 
@@ -73,7 +73,7 @@ endmodule : fifo
 
 `ifdef FIFO_MODE_ASYNC
 
-module async_fifo #(
+module fifo #(
     parameter DATA_WIDTH = 8,     // ширина данных (обычно 8 бит для UART)
     parameter FIFO_DEPTH = 16,    // глубина FIFO (должна быть степенью 2)
     parameter LOG2_DEPTH = $clog2(FIFO_DEPTH)  // автоматический расчет
@@ -191,13 +191,13 @@ module async_fifo #(
     // Read data (combinational)
     assign RDo = mem[rd_ptr[LOG2_DEPTH-1:0]];
 
-endmodule: async_fifo
+endmodule: fifo
 
 `endif
 
 `ifdef FIFO_MODE_2PORT
 
-module DualPortFIFO #(
+module fifo #(
     parameter DATA_WIDTH = 8,   // Ширина данных
     parameter FIFO_DEPTH = 16  // Глубина FIFO
 )(
@@ -256,6 +256,6 @@ module DualPortFIFO #(
     assign FULLo = (count == FIFO_DEPTH);
     assign EMPTYo = (count == 0);
 
-endmodule: DualPortFIFO
+endmodule: fifo
 
 `endif

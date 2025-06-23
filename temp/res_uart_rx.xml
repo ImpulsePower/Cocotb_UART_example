@@ -1,8 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1747163418" />
-    <testcase name="run_test_uart_rx" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="41" time="2142.2843759059906" sim_time_ns="246465.0" ratio_time="115.04775125653792">
-      <failure message="Test failed with RANDOM_SEED=1747163418" />
-    </testcase>
-  </testsuite>
-</testsuites>
