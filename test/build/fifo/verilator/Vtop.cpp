@@ -11,11 +11,11 @@ Vtop::Vtop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , vlSymsp{new Vtop__Syms(contextp(), _vcname__, this)}
     , CLKip{vlSymsp->TOP.CLKip}
     , RSTi{vlSymsp->TOP.RSTi}
-    , DATAi{vlSymsp->TOP.DATAi}
     , WEi{vlSymsp->TOP.WEi}
-    , FULLo{vlSymsp->TOP.FULLo}
-    , DATAo{vlSymsp->TOP.DATAo}
+    , DATAi{vlSymsp->TOP.DATAi}
     , RDi{vlSymsp->TOP.RDi}
+    , DATAo{vlSymsp->TOP.DATAo}
+    , FULLo{vlSymsp->TOP.FULLo}
     , EMPTYo{vlSymsp->TOP.EMPTYo}
     , rootp{&(vlSymsp->TOP)}
 {

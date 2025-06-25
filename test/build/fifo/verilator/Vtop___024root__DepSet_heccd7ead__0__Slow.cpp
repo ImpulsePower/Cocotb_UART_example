@@ -5,32 +5,23 @@
 #include "Vtop__pch.h"
 #include "Vtop___024root.h"
 
-VL_ATTR_COLD void Vtop___024root___eval_static__TOP(Vtop___024root* vlSelf);
-
 VL_ATTR_COLD void Vtop___024root___eval_static(Vtop___024root* vlSelf) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root___eval_static\n"); );
     Vtop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
     // Body
-    Vtop___024root___eval_static__TOP(vlSelf);
     vlSelfRef.__Vtrigprevexpr___TOP__CLKip__0 = vlSelfRef.CLKip;
     vlSelfRef.__Vtrigprevexpr___TOP__RSTi__0 = vlSelfRef.RSTi;
 }
 
-VL_ATTR_COLD void Vtop___024root___eval_static__TOP(Vtop___024root* vlSelf) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root___eval_static__TOP\n"); );
-    Vtop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
-    auto& vlSelfRef = std::ref(*vlSelf).get();
-    // Body
-    vlSelfRef.fifo__DOT__wr_ptr = 0U;
-    vlSelfRef.fifo__DOT__rd_ptr = 0U;
-    vlSelfRef.fifo__DOT__count = 0U;
-}
+VL_ATTR_COLD void Vtop___024root___eval_initial__TOP(Vtop___024root* vlSelf);
 
 VL_ATTR_COLD void Vtop___024root___eval_initial(Vtop___024root* vlSelf) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root___eval_initial\n"); );
     Vtop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
+    // Body
+    Vtop___024root___eval_initial__TOP(vlSelf);
 }
 
 VL_ATTR_COLD void Vtop___024root___eval_final(Vtop___024root* vlSelf) {
@@ -60,7 +51,7 @@ VL_ATTR_COLD void Vtop___024root___eval_settle(Vtop___024root* vlSelf) {
 #ifdef VL_DEBUG
             Vtop___024root___dump_triggers__stl(vlSelf);
 #endif
-            VL_FATAL_MT("/home/imp/work/uart/src/fifo.sv", 200, "", "Settle region did not converge.");
+            VL_FATAL_MT("/home/imp/work/uart/src/fifo.sv", 17, "", "Settle region did not converge.");
         }
         __VstlIterCount = ((IData)(1U) + __VstlIterCount);
         __VstlContinue = 0U;
@@ -173,26 +164,26 @@ VL_ATTR_COLD void Vtop___024root___ctor_var_reset(Vtop___024root* vlSelf) {
     // Body
     vlSelf->CLKip = VL_RAND_RESET_I(1);
     vlSelf->RSTi = VL_RAND_RESET_I(1);
-    vlSelf->DATAi = VL_RAND_RESET_I(8);
     vlSelf->WEi = VL_RAND_RESET_I(1);
-    vlSelf->FULLo = VL_RAND_RESET_I(1);
-    vlSelf->DATAo = VL_RAND_RESET_I(8);
+    vlSelf->DATAi = VL_RAND_RESET_I(8);
     vlSelf->RDi = VL_RAND_RESET_I(1);
+    vlSelf->DATAo = VL_RAND_RESET_I(8);
+    vlSelf->FULLo = VL_RAND_RESET_I(1);
     vlSelf->EMPTYo = VL_RAND_RESET_I(1);
     vlSelf->fifo__DOT__CLKip = VL_RAND_RESET_I(1);
     vlSelf->fifo__DOT__RSTi = VL_RAND_RESET_I(1);
-    vlSelf->fifo__DOT__DATAi = VL_RAND_RESET_I(8);
     vlSelf->fifo__DOT__WEi = VL_RAND_RESET_I(1);
-    vlSelf->fifo__DOT__FULLo = VL_RAND_RESET_I(1);
-    vlSelf->fifo__DOT__DATAo = VL_RAND_RESET_I(8);
+    vlSelf->fifo__DOT__DATAi = VL_RAND_RESET_I(8);
     vlSelf->fifo__DOT__RDi = VL_RAND_RESET_I(1);
+    vlSelf->fifo__DOT__DATAo = VL_RAND_RESET_I(8);
+    vlSelf->fifo__DOT__FULLo = VL_RAND_RESET_I(1);
     vlSelf->fifo__DOT__EMPTYo = VL_RAND_RESET_I(1);
     for (int __Vi0 = 0; __Vi0 < 16; ++__Vi0) {
-        vlSelf->fifo__DOT__fifo_mem[__Vi0] = VL_RAND_RESET_I(8);
+        vlSelf->fifo__DOT__memory[__Vi0] = VL_RAND_RESET_I(8);
     }
+    vlSelf->fifo__DOT__count = VL_RAND_RESET_I(5);
     vlSelf->fifo__DOT__wr_ptr = VL_RAND_RESET_I(4);
     vlSelf->fifo__DOT__rd_ptr = VL_RAND_RESET_I(4);
-    vlSelf->fifo__DOT__count = VL_RAND_RESET_I(5);
     vlSelf->__Vtrigprevexpr___TOP__CLKip__0 = VL_RAND_RESET_I(1);
     vlSelf->__Vtrigprevexpr___TOP__RSTi__0 = VL_RAND_RESET_I(1);
 }

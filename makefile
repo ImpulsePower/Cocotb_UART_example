@@ -37,6 +37,7 @@ else
   $(error Unsupported format '$(TOPLEVEL_LANG)'. \
   Supported: $(SUPPORTED_TL_LANG))
 endif
+
 # ==============================================================
 
 # ========================== PATHS =============================
@@ -76,6 +77,7 @@ TEST_UART_SOURCES = $(sort \
     				$(TEST_AXI_SOURCES))		
 
 RESULTS_DIR = temp
+WAVEFORM_DIR = test/dump
 # ==============================================================
 
 # ========================= RULES ==============================
@@ -97,11 +99,19 @@ $(D2_OUT_DIR)/%.$(FORMAT): $(D2_SRC_DIR)/%.d2
 	$(D2) $< $@
 
 # Cocotb rules
-# WAVES=1
 COCOTB_RESULTS_FILE = temp/res_$(TOPLEVEL_FIFO).xml
 COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ps
-EXTRA_ARGS=--trace --coverage
+# WAVES ?= 1
+
+# ifeq ($(SIM),icarus)
+#     ifeq ($(WAVES),1)
+#         export COCOTB_DISABLE_IVERILOG_DUMP=1
+#         SIM_ARGS += -DDUMP_WAVES
+#         EXTRA_ARGS += -fst
+#     endif
+# endif
+# EXTRA_ARGS=--trace --coverage
 # ==============================================================
 
 # ========================= TARGETS ============================
@@ -130,8 +140,11 @@ test_fifo:
 	VERILOG_SOURCES="$(TEST_FIFO_SOURCES)" \
 	TOPLEVEL="$(TOPLEVEL_FIFO)" \
 	MODULE="test_$(TOPLEVEL_FIFO)" \
-	SIM_BUILD=$(PWD)/test/build/$(TOPLEVEL_FIFO)/$(SIM) \
+	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_FIFO)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
+
+view_fifo:
+	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_FIFO).fst
 
 # Cocotb testing uart rx
 test_rx:
@@ -140,7 +153,7 @@ test_rx:
 	VERILOG_SOURCES="$(TEST_RX_SOURCES)" \
 	TOPLEVEL="$(TOPLEVEL_RX)" \
 	MODULE="test_$(TOPLEVEL_RX)" \
-	SIM_BUILD=$(PWD)/test/build/$(TOPLEVEL_RX)/$(SIM) \
+	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_RX)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
 # Cocotb testing uart tx
@@ -150,7 +163,7 @@ test_tx:
 	VERILOG_SOURCES="$(TEST_TX_SOURCES)" \
 	TOPLEVEL="$(TOPLEVEL_TX)" \
 	MODULE="test_$(TOPLEVEL_TX)" \
-	SIM_BUILD=$(PWD)/test/build/$(TOPLEVEL_TX)/$(SIM) \
+	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_TX)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
 # Cocotb testing AXI Lite slave
@@ -160,7 +173,7 @@ test_axi:
 	VERILOG_SOURCES="$(TEST_AXI_SOURCES)" \
 	TOPLEVEL="$(TOPLEVEL_AXI)" \
 	MODULE="test_$(TOPLEVEL_AXI)" \
-	SIM_BUILD=$(PWD)/test/build/$(TOPLEVEL_AXI)/$(SIM) \
+	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_AXI)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
 # Cocotb testing UART
@@ -170,7 +183,7 @@ test_uart:
 	VERILOG_SOURCES="$(TEST_UART_SOURCES)" \
 	TOPLEVEL="$(TOPLEVEL_UART)" \
 	MODULE="test_$(TOPLEVEL_UART)" \
-	SIM_BUILD=$(PWD)/test/build/$(TOPLEVEL_UART)/$(SIM) \
+	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_UART)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
 # Cleaning generated files
