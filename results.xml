@@ -1,20 +1,12 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1750874890" />
-    <testcase name="test_fifo_basic_operations" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="14" time="0.002592802047729492" sim_time_ns="30.001" ratio_time="11570.879476229886">
-      <failure message="Test failed with RANDOM_SEED=1750874890" />
+    <property name="random_seed" value="1750972189" />
+    <testcase name="reset_behavior" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="54" time="0.002222299575805664" sim_time_ns="100.001" ratio_time="44998.88362879519" />
+    <testcase name="basic_operations" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="105" time="0.0018491744995117188" sim_time_ns="95.001" ratio_time="51374.81618153688" />
+    <testcase name="full_condition" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="146" time="0.007270336151123047" sim_time_ns="215.00099999999998" ratio_time="29572.360277562795" />
+    <testcase name="simultaneous_read_write" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="176" time="0.0021779537200927734" sim_time_ns="130.00100000000003" ratio_time="59689.514428461975">
+      <failure message="Test failed with RANDOM_SEED=123" />
     </testcase>
-    <testcase name="test_fifo_full_condition" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="46" time="0.0030298233032226562" sim_time_ns="190.001" ratio_time="62710.25765690904">
-      <failure message="Test failed with RANDOM_SEED=1750874890" />
-    </testcase>
-    <testcase name="test_fifo_simultaneous_read_write" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="74" time="0.0017993450164794922" sim_time_ns="120.00099999999998" ratio_time="66691.48990380282">
-      <failure message="Test failed with RANDOM_SEED=1750874890" />
-    </testcase>
-    <testcase name="test_fifo_random_operations" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="106" time="0.0009162425994873047" sim_time_ns="40.00100000000003" ratio_time="43657.651393182445">
-      <failure message="Test failed with RANDOM_SEED=1750874890" />
-    </testcase>
-    <testcase name="test_fifo_reset_behavior" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="144" time="0.0010540485382080078" sim_time_ns="60.000999999999976" ratio_time="56924.323524994325">
-      <failure message="Test failed with RANDOM_SEED=1750874890" />
-    </testcase>
+    <testcase name="random_operations" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="211" time="0.020061969757080078" sim_time_ns="1020.0010000000001" ratio_time="50842.515084543535" />
   </testsuite>
 </testsuites>

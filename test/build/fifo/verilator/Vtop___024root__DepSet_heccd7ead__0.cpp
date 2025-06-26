@@ -27,9 +27,7 @@ VL_INLINE_OPT void Vtop___024root___ico_sequent__TOP__0(Vtop___024root* vlSelf) 
     vlSelfRef.fifo__DOT__WEi = vlSelfRef.WEi;
     vlSelfRef.fifo__DOT__DATAi = vlSelfRef.DATAi;
     vlSelfRef.fifo__DOT__RDi = vlSelfRef.RDi;
-    vlSelfRef.DATAo = vlSelfRef.fifo__DOT__memory[vlSelfRef.fifo__DOT__rd_ptr];
-    vlSelfRef.fifo__DOT__DATAo = vlSelfRef.fifo__DOT__memory
-        [vlSelfRef.fifo__DOT__rd_ptr];
+    vlSelfRef.DATAo = vlSelfRef.fifo__DOT__DATAo;
     vlSelfRef.fifo__DOT__FULLo = (0x10U == (IData)(vlSelfRef.fifo__DOT__count));
     vlSelfRef.fifo__DOT__EMPTYo = (0U == (IData)(vlSelfRef.fifo__DOT__count));
     vlSelfRef.FULLo = vlSelfRef.fifo__DOT__FULLo;
@@ -80,24 +78,34 @@ VL_INLINE_OPT void Vtop___024root___nba_sequent__TOP__0(Vtop___024root* vlSelf) 
     __Vdly__fifo__DOT__wr_ptr = 0;
     CData/*3:0*/ __Vdly__fifo__DOT__rd_ptr;
     __Vdly__fifo__DOT__rd_ptr = 0;
-    CData/*7:0*/ __VdlyVal__fifo__DOT__memory__v0;
-    __VdlyVal__fifo__DOT__memory__v0 = 0;
-    CData/*3:0*/ __VdlyDim0__fifo__DOT__memory__v0;
-    __VdlyDim0__fifo__DOT__memory__v0 = 0;
     CData/*0:0*/ __VdlySet__fifo__DOT__memory__v0;
     __VdlySet__fifo__DOT__memory__v0 = 0;
+    CData/*7:0*/ __VdlyVal__fifo__DOT__memory__v1;
+    __VdlyVal__fifo__DOT__memory__v1 = 0;
+    CData/*3:0*/ __VdlyDim0__fifo__DOT__memory__v1;
+    __VdlyDim0__fifo__DOT__memory__v1 = 0;
+    CData/*0:0*/ __VdlySet__fifo__DOT__memory__v1;
+    __VdlySet__fifo__DOT__memory__v1 = 0;
     // Body
     __Vdly__fifo__DOT__rd_ptr = vlSelfRef.fifo__DOT__rd_ptr;
     __Vdly__fifo__DOT__wr_ptr = vlSelfRef.fifo__DOT__wr_ptr;
     __VdlySet__fifo__DOT__memory__v0 = 0U;
+    __VdlySet__fifo__DOT__memory__v1 = 0U;
     if (vlSelfRef.RSTi) {
-        __Vdly__fifo__DOT__rd_ptr = 0U;
-        vlSelfRef.fifo__DOT__count = 0U;
         __Vdly__fifo__DOT__wr_ptr = 0U;
+        __VdlySet__fifo__DOT__memory__v0 = 1U;
+        vlSelfRef.fifo__DOT__count = 0U;
+        vlSelfRef.fifo__DOT__count_state = 0U;
+        __Vdly__fifo__DOT__rd_ptr = 0U;
     } else {
-        if (((IData)(vlSelfRef.RDi) & (~ (IData)(vlSelfRef.fifo__DOT__EMPTYo)))) {
-            __Vdly__fifo__DOT__rd_ptr = (0xfU & ((IData)(1U) 
-                                                 + (IData)(vlSelfRef.fifo__DOT__rd_ptr)));
+        if (((IData)(vlSelfRef.WEi) & (~ (IData)(vlSelfRef.fifo__DOT__FULLo)))) {
+            __VdlyVal__fifo__DOT__memory__v1 = vlSelfRef.DATAi;
+            __VdlyDim0__fifo__DOT__memory__v1 = vlSelfRef.fifo__DOT__wr_ptr;
+            __VdlySet__fifo__DOT__memory__v1 = 1U;
+            __Vdly__fifo__DOT__wr_ptr = ((0xfU == (IData)(vlSelfRef.fifo__DOT__wr_ptr))
+                                          ? 0U : (0xfU 
+                                                  & ((IData)(1U) 
+                                                     + (IData)(vlSelfRef.fifo__DOT__wr_ptr))));
         }
         vlSelfRef.fifo__DOT__count = (0x1fU & ((1U 
                                                 == 
@@ -120,25 +128,27 @@ VL_INLINE_OPT void Vtop___024root___nba_sequent__TOP__0(Vtop___024root* vlSelf) 
                                                    ((IData)(1U) 
                                                     + (IData)(vlSelfRef.fifo__DOT__count))
                                                     : (IData)(vlSelfRef.fifo__DOT__count))));
-        if (((IData)(vlSelfRef.WEi) & (~ (IData)(vlSelfRef.fifo__DOT__FULLo)))) {
-            __VdlyVal__fifo__DOT__memory__v0 = vlSelfRef.DATAi;
-            __VdlyDim0__fifo__DOT__memory__v0 = vlSelfRef.fifo__DOT__wr_ptr;
-            __VdlySet__fifo__DOT__memory__v0 = 1U;
-            __Vdly__fifo__DOT__wr_ptr = (0xfU & ((IData)(1U) 
-                                                 + (IData)(vlSelfRef.fifo__DOT__wr_ptr)));
+        if (((IData)(vlSelfRef.RDi) & (~ (IData)(vlSelfRef.fifo__DOT__EMPTYo)))) {
+            vlSelfRef.fifo__DOT__DATAo = vlSelfRef.fifo__DOT__memory
+                [vlSelfRef.fifo__DOT__rd_ptr];
+            __Vdly__fifo__DOT__rd_ptr = ((0xfU == (IData)(vlSelfRef.fifo__DOT__rd_ptr))
+                                          ? 0U : (0xfU 
+                                                  & ((IData)(1U) 
+                                                     + (IData)(vlSelfRef.fifo__DOT__rd_ptr))));
         }
     }
-    vlSelfRef.fifo__DOT__rd_ptr = __Vdly__fifo__DOT__rd_ptr;
     vlSelfRef.fifo__DOT__wr_ptr = __Vdly__fifo__DOT__wr_ptr;
+    vlSelfRef.fifo__DOT__rd_ptr = __Vdly__fifo__DOT__rd_ptr;
     if (__VdlySet__fifo__DOT__memory__v0) {
-        vlSelfRef.fifo__DOT__memory[__VdlyDim0__fifo__DOT__memory__v0] 
-            = __VdlyVal__fifo__DOT__memory__v0;
+        vlSelfRef.fifo__DOT__memory[0U] = 0U;
+    }
+    if (__VdlySet__fifo__DOT__memory__v1) {
+        vlSelfRef.fifo__DOT__memory[__VdlyDim0__fifo__DOT__memory__v1] 
+            = __VdlyVal__fifo__DOT__memory__v1;
     }
     vlSelfRef.fifo__DOT__FULLo = (0x10U == (IData)(vlSelfRef.fifo__DOT__count));
     vlSelfRef.fifo__DOT__EMPTYo = (0U == (IData)(vlSelfRef.fifo__DOT__count));
-    vlSelfRef.DATAo = vlSelfRef.fifo__DOT__memory[vlSelfRef.fifo__DOT__rd_ptr];
-    vlSelfRef.fifo__DOT__DATAo = vlSelfRef.fifo__DOT__memory
-        [vlSelfRef.fifo__DOT__rd_ptr];
+    vlSelfRef.DATAo = vlSelfRef.fifo__DOT__DATAo;
     vlSelfRef.FULLo = vlSelfRef.fifo__DOT__FULLo;
     vlSelfRef.EMPTYo = vlSelfRef.fifo__DOT__EMPTYo;
 }

@@ -33,39 +33,44 @@ module fifo #(
     logic [LOG2_DEPTH:0]   count;
     logic [LOG2_DEPTH-1:0] wr_ptr;
     logic [LOG2_DEPTH-1:0] rd_ptr;
+    logic [1:0] count_state;
 
     always_ff @(posedge CLKip or posedge RSTi) begin
         if (RSTi) begin
-            wr_ptr <= '0;
-            rd_ptr <= '0;
-            count  <= '0;
-        end else begin
+            wr_ptr  <= '0;
+            rd_ptr  <= '0;
+            count   <= '0;
+            count_state <= '0;
+            memory[0] <= 0;
+        end 
+        else begin
             // Write operation
             if (WEi && !FULLo) begin
                 memory[wr_ptr] <= DATAi;
-                wr_ptr <= wr_ptr + 1;
+                wr_ptr <= (wr_ptr == '1) ? 0 : wr_ptr + 1;
             end
 
             // Read operation
             if (RDi && !EMPTYo) begin
-                rd_ptr <= rd_ptr + 1;
-            end
+                DATAo <= memory[rd_ptr];
+                rd_ptr <= (rd_ptr == '1) ? 0 : rd_ptr + 1;
 
+            end
+            
             // Update count
             case ({WEi && !FULLo, RDi && !EMPTYo})
                 2'b01:   count <= count - 1;
                 2'b10:   count <= count + 1;
+                2'b11:   count <= count;
                 default: count <= count;
             endcase
         end
     end
 
-    // Output data (combinational read)
-    assign DATAo = memory[rd_ptr];
-
-    // Status flags
-    assign FULLo  = (count == FIFO_DEPTH);
-    assign EMPTYo = (count == 0);
+    always_comb begin
+        FULLo  = (count == FIFO_DEPTH);
+        EMPTYo = (count == 0);
+    end
 
     initial begin
         $dumpfile("test/dump/fifo.fst");

@@ -194,10 +194,11 @@ clean:
 	rm -rf $(RESULTS_DIR)/*
 
 # Clearing folders of generated files
-clean_folder:
+clean_build:
 	rm -rf $(D2_OUT_DIR)
 	rm -rf $(COCOTB_BUILD)
 	rm -rf $(PDF_DIR)
-	
+	rm -rf $(RESULTS_DIR)
+
 .PHONY: all clean
 # ==============================================================

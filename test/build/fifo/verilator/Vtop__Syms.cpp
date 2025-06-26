@@ -22,7 +22,7 @@ Vtop__Syms::Vtop__Syms(VerilatedContext* contextp, const char* namep, Vtop* mode
     , TOP{this, namep}
 {
         // Check resources
-        Verilated::stackCheck(55);
+        Verilated::stackCheck(57);
     // Configure time unit / time precision
     _vm_contextp__->timeunit(-9);
     _vm_contextp__->timeprecision(-12);
@@ -58,6 +58,7 @@ Vtop__Syms::Vtop__Syms(VerilatedContext* contextp, const char* namep, Vtop* mode
         __Vscope_fifo.varInsert(__Vfinal,"RSTi", &(TOP.fifo__DOT__RSTi), false, VLVT_UINT8,VLVD_NODIR|VLVF_PUB_RW,0,0);
         __Vscope_fifo.varInsert(__Vfinal,"WEi", &(TOP.fifo__DOT__WEi), false, VLVT_UINT8,VLVD_NODIR|VLVF_PUB_RW,0,0);
         __Vscope_fifo.varInsert(__Vfinal,"count", &(TOP.fifo__DOT__count), false, VLVT_UINT8,VLVD_NODIR|VLVF_PUB_RW,0,1 ,4,0);
+        __Vscope_fifo.varInsert(__Vfinal,"count_state", &(TOP.fifo__DOT__count_state), false, VLVT_UINT8,VLVD_NODIR|VLVF_PUB_RW,0,1 ,1,0);
         __Vscope_fifo.varInsert(__Vfinal,"memory", &(TOP.fifo__DOT__memory), false, VLVT_UINT8,VLVD_NODIR|VLVF_PUB_RW,1,1 ,0,15 ,7,0);
         __Vscope_fifo.varInsert(__Vfinal,"rd_ptr", &(TOP.fifo__DOT__rd_ptr), false, VLVT_UINT8,VLVD_NODIR|VLVF_PUB_RW,0,1 ,3,0);
         __Vscope_fifo.varInsert(__Vfinal,"wr_ptr", &(TOP.fifo__DOT__wr_ptr), false, VLVT_UINT8,VLVD_NODIR|VLVF_PUB_RW,0,1 ,3,0);

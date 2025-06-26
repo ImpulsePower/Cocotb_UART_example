@@ -19,7 +19,7 @@ VL_ATTR_COLD void Vtop___024root___eval_initial__TOP(Vtop___024root* vlSelf) {
     __Vtemp_1[3U] = 0x73742f64U;
     __Vtemp_1[4U] = 0x7465U;
     vlSymsp->_vm_contextp__->dumpfile(VL_CVT_PACK_STR_NW(5, __Vtemp_1));
-    VL_PRINTF_MT("-Info: /home/imp/work/uart/src/fifo.sv:72: $dumpvar ignored, as Verilated without --trace\n");
+    VL_PRINTF_MT("-Info: /home/imp/work/uart/src/fifo.sv:77: $dumpvar ignored, as Verilated without --trace\n");
 }
 
 #ifdef VL_DEBUG
