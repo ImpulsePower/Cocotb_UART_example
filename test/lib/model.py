@@ -8,7 +8,7 @@
 
 '''
 from typing import Protocol
-from lib.const import *
+from test.lib.config import *
 
 class AbstractReferenceModel(Protocol): 
     def calculate(self): ...

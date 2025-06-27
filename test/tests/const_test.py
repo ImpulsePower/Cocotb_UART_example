@@ -1,8 +1,8 @@
 import pytest
-from test.lib.const import *
+from test.lib.config import *
 
 import pytest
-from test.lib.const import *
+from test.lib.config import *
 
 # @pytest.mark.slow
 def test_unit_get_name():

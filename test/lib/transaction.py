@@ -11,7 +11,7 @@ from typing import Optional,Dict, Any, List
 from icecream import ic
 from dataclasses import dataclass
 
-from lib.const import *
+from test.lib.config import *
 
 @dataclass(frozen=True, slots=True)
 class TransactionConfig:

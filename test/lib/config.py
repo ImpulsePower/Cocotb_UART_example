@@ -154,4 +154,25 @@ class TestbenchConstants:
         <RESET: {self.NEED_RST} UNIT: {self.UNIT}>
         <CLOCK DELAY: {self.CLOCK_DELAY} RESET DELAY: {self.RESET_DELAY}) DELAY: {self.DELAY})>
         '''
-    
+
+@dataclass(frozen=True)    
+class FIFO_ports:
+    clk: str    = "CLKip"
+    rst: str    = "RSTi"
+    datai: str  = "DATAi"
+    datao: str  = "DATAo"
+    we: str     = "WEi"
+    rd: str     = "RDi"
+    full: str   = "FULLo"
+    empty: str  = "EMPTYo"
+
+    # def __init__(self, dut):
+    #     self._dut = dut  # Сохраняем dut внутри объекта
+
+    # def __getattr__(self, attr):
+    #     """Позволяет писать port.clk вместо port.clk_name."""
+    #     if attr in self.__annotations__:
+    #         signal_name = getattr(self, attr)
+    #         return getattr(self._dut, signal_name)
+    #     raise AttributeError(f"Unknown port: {attr}")
+
