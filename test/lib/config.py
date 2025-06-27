@@ -168,7 +168,7 @@ class FIFO_ports:
     data_width: str = "DATA_WIDTH"
 
     def __init__(self, dut):
-        self._dut = dut  # Сохраняем dut внутри объекта
+        self._dut = dut
 
     @property
     def CLK(self):

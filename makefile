@@ -156,6 +156,9 @@ test_rx:
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_RX)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
+view_rx:
+	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_RX).fst
+
 # Cocotb testing uart tx
 test_tx:
 	SIM="$(SIM)" \
@@ -165,6 +168,9 @@ test_tx:
 	MODULE="test_$(TOPLEVEL_TX)" \
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_TX)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
+
+view_tx:
+	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_TX).fst
 
 # Cocotb testing AXI Lite slave
 test_axi:
@@ -176,6 +182,9 @@ test_axi:
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_AXI)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
+view_axi:
+	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_AXI).fst
+
 # Cocotb testing UART
 test_uart:
 	SIM="$(SIM)" \
@@ -186,6 +195,9 @@ test_uart:
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_UART)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
+view_uart:
+	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_UART).fst
+	
 # Cleaning generated files
 clean:
 	rm -rf $(shell find $(D2_OUT_DIR) -name '*.$(FORMAT)')
