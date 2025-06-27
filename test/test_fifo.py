@@ -12,7 +12,6 @@ cocotb.RANDOM_SEED = SEED
 
 dc = DesignConstants()
 tbc = TestbenchConstants(design=dc)
-# ports = FIFO_ports()
 
 async def generate_clock(tbc,ports) -> None:
     """
@@ -211,7 +210,8 @@ async def random_operations(dut):
     data_width = int(ports.DATA_WIDTH.value)
     reference_queue = []
     
-    for _ in range(100):  # Perform 100 random operations
+    tests = fifo_depth ** 2
+    for _ in range(tests):  # Perform 256 random operations
         # Randomly choose to read or write
         do_write = choice([True, False])
         

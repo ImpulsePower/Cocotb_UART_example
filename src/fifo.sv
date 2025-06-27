@@ -44,14 +44,12 @@ module fifo #(
             memory[0] <= 0;
         end 
         else begin
-            // Write operation
-            if (WEi && !FULLo) begin
+            if (WEi && !FULLo) begin: write
                 memory[wr_ptr] <= DATAi;
                 wr_ptr <= (wr_ptr == '1) ? 0 : wr_ptr + 1;
             end
 
-            // Read operation
-            if (RDi && !EMPTYo) begin
+            if (RDi && !EMPTYo) begin: read
                 DATAo <= memory[rd_ptr];
                 rd_ptr <= (rd_ptr == '1) ? 0 : rd_ptr + 1;
 
@@ -67,7 +65,7 @@ module fifo #(
         end
     end
 
-    always_comb begin
+    always_comb begin: status
         FULLo  = (count == FIFO_DEPTH);
         EMPTYo = (count == 0);
     end

@@ -120,6 +120,7 @@ all: test
 
 # Docs
 docs: docs_d2 docs_pdf
+
 # Generate pdf files from Markdown
 docs_pdf: $(patsubst $(MD_SRC_DIR)/%.md, \
 			$(PDF_DIR)/%.pdf, \
@@ -197,7 +198,7 @@ test_uart:
 
 view_uart:
 	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_UART).fst
-	
+
 # Cleaning generated files
 clean:
 	rm -rf $(shell find $(D2_OUT_DIR) -name '*.$(FORMAT)')
