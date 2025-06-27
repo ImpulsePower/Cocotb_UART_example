@@ -1,10 +1,10 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1751033300" />
-    <testcase name="reset_behavior" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="51" time="0.004357576370239258" sim_time_ns="95.001" ratio_time="21801.33907665372" />
-    <testcase name="basic_operations" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="97" time="0.0014696121215820312" sim_time_ns="85.001" ratio_time="57839.07110707333" />
-    <testcase name="full_condition" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="135" time="0.0032122135162353516" sim_time_ns="215.00099999999998" ratio_time="66932.35020440881" />
-    <testcase name="simultaneous_read_write" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="167" time="0.0026252269744873047" sim_time_ns="125.00100000000003" ratio_time="47615.31144346564" />
-    <testcase name="random_operations" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="201" time="0.04438972473144531" sim_time_ns="2585.001" ratio_time="58234.22009573326" />
+    <property name="random_seed" value="1751053377" />
+    <testcase name="reset_behavior" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="51" time="0.0029129981994628906" sim_time_ns="95.001" ratio_time="32612.79049795384" />
+    <testcase name="basic_operations" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="97" time="0.001413583755493164" sim_time_ns="85.001" ratio_time="60131.562540732" />
+    <testcase name="full_condition" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="135" time="0.003494739532470703" sim_time_ns="215.00099999999998" ratio_time="61521.323120753164" />
+    <testcase name="simultaneous_read_write" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="167" time="0.0024683475494384766" sim_time_ns="125.00100000000003" ratio_time="50641.571940886715" />
+    <testcase name="random_operations" classname="test_fifo" file="/home/imp/work/uart/test/test_fifo.py" lineno="201" time="0.05550360679626465" sim_time_ns="2585.001" ratio_time="46573.56790322983" />
   </testsuite>
 </testsuites>

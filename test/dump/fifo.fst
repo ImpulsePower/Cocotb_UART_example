@@ -1,5 +1,5 @@
 $date
-	Fri Jun 27 17:08:13 2025
+	Fri Jun 27 22:42:57 2025
 $end
 $version
 	Icarus Verilog
@@ -21,6 +21,8 @@ $var reg 2 * count_state [1:0] $end
 $var reg 4 + rd_ptr [3:0] $end
 $var reg 4 , wr_ptr [3:0] $end
 $scope begin read $end
+$upscope $end
+$scope begin status $end
 $upscope $end
 $scope begin write $end
 $upscope $end

@@ -20,7 +20,6 @@ from cocotb.handle  import SimHandleBase
 from lib.uvm        import *
 from cocotb.clock import Clock
 
-
 @cocotb.test()
 async def test_uart_rx(dut,sig_in="RXi",sig_out="DATAo"):
     """

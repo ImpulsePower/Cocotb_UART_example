@@ -78,6 +78,10 @@ TEST_UART_SOURCES = $(sort \
 
 RESULTS_DIR = temp
 WAVEFORM_DIR = test/dump
+ 
+PDOC_DIR = docs
+DOC_NAME = docs
+CONFIG = config/pydoc.yml
 # ==============================================================
 
 # ========================= RULES ==============================
@@ -119,7 +123,7 @@ COCOTB_HDL_TIMEPRECISION = 1ps
 all: test
 
 # Docs
-docs: docs_d2 docs_pdf
+docs: pdoc docs_d2 docs_pdf
 
 # Generate pdf files from Markdown
 docs_pdf: $(patsubst $(MD_SRC_DIR)/%.md, \
@@ -130,6 +134,11 @@ docs_pdf: $(patsubst $(MD_SRC_DIR)/%.md, \
 docs_d2: $(patsubst $(D2_SRC_DIR)/%.d2, \
 			$(D2_OUT_DIR)/%.$(FORMAT), \
 			$(D2_SOURCES))
+
+pdoc:
+	@pydoc-markdown $(CONFIG) > $(PDOC_DIR)/$(DOC_NAME).md
+	@echo "✅ Документация успешно сгенерирована в $(PDOC_DIR)/"
+
 
 # Testing
 test: test_fifo test_rx
@@ -205,6 +214,7 @@ clean:
 	rm -rf $(COCOTB_BUILD)/*
 	rm -rf $(PDF_DIR)/*
 	rm -rf $(RESULTS_DIR)/*
+	rm -rf $(PDOC_DIR)/$(DOC_NAME).md
 
 # Clearing folders of generated files
 clean_build:

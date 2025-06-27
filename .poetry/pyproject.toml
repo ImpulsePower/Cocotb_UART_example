@@ -12,7 +12,8 @@ dependencies = [
     "pytest (>=8.3.5,<9.0.0)",
     "pytest-cov (>=6.1.1,<7.0.0)",
     "debugpy (>=1.8.14,<2.0.0)",
-    "cocotbext-axi (>=0.1.24,<0.2.0)"
+    "cocotbext-axi (>=0.1.24,<0.2.0)",
+    "pydoc-markdown (>=4.8.2,<5.0.0)",
 ]
 
 

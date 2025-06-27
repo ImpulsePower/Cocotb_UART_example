@@ -3,6 +3,7 @@ from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, FallingEdge, Timer
 from cocotb.result import TestFailure
 from random import choice, randint, seed
+from test.lib.ports import *
 from test.lib.config import *
 
 

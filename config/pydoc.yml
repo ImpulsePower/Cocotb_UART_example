@@ -1,0 +1,17 @@
+# pydoc-markdown.yml
+renderer:
+  type: markdown
+  descriptive_class_title: false
+  render_toc: true
+  header_level_by_type:
+    Module: 1
+    Class: 2
+    Function: 3
+    Method: 3
+  add_member_class_prefix: false
+  insert_header_anchors: true
+
+loaders:
+  - type: python
+    search_path: 
+      - test/lib
