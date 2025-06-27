@@ -154,8 +154,7 @@ class TestbenchConstants:
         <RESET: {self.NEED_RST} UNIT: {self.UNIT}>
         <CLOCK DELAY: {self.CLOCK_DELAY} RESET DELAY: {self.RESET_DELAY}) DELAY: {self.DELAY})>
         '''
-
-@dataclass(frozen=True)    
+    
 class FIFO_ports:
     clk: str    = "CLKip"
     rst: str    = "RSTi"
@@ -165,14 +164,48 @@ class FIFO_ports:
     rd: str     = "RDi"
     full: str   = "FULLo"
     empty: str  = "EMPTYo"
+    fifo_depth: str = "FIFO_DEPTH"
+    data_width: str = "DATA_WIDTH"
 
-    # def __init__(self, dut):
-    #     self._dut = dut  # Сохраняем dut внутри объекта
+    def __init__(self, dut):
+        self._dut = dut  # Сохраняем dut внутри объекта
 
-    # def __getattr__(self, attr):
-    #     """Позволяет писать port.clk вместо port.clk_name."""
-    #     if attr in self.__annotations__:
-    #         signal_name = getattr(self, attr)
-    #         return getattr(self._dut, signal_name)
-    #     raise AttributeError(f"Unknown port: {attr}")
+    @property
+    def CLK(self):
+        return getattr(self._dut, self.clk)
 
+    @property
+    def RST(self):
+        return getattr(self._dut, self.rst)
+
+    @property
+    def DATAi(self):
+        return getattr(self._dut, self.datai)
+    
+    @property
+    def DATAo(self):
+        return getattr(self._dut, self.datao)
+    
+    @property
+    def WE(self):
+        return getattr(self._dut, self.we)
+    
+    @property
+    def RD(self):
+        return getattr(self._dut, self.rd)
+
+    @property
+    def FULL(self):
+        return getattr(self._dut, self.full)
+    
+    @property
+    def EMPTY(self):
+        return getattr(self._dut, self.empty)
+    
+    @property
+    def FIFO_DEPTH(self):
+        return getattr(self._dut, self.fifo_depth)
+
+    @property
+    def DATA_WIDTH(self):
+        return getattr(self._dut, self.data_width)
