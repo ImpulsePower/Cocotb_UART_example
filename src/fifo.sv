@@ -7,12 +7,9 @@
 * History:
 
 */
-// `include "defines.svh"
 `timescale 1ns/1ps
 
-// `define FIFO_MODE_2PORT
-
-// `ifdef FIFO_MODE_SYNC
+`ifdef FIFO_MODE_SYNC
 
 module fifo #(
     parameter DATA_WIDTH = 8,
@@ -76,12 +73,11 @@ module fifo #(
     end
 endmodule : fifo
 
-
-// `endif
+`endif
 
 // `ifdef FIFO_MODE_ASYNC
 
-// module fifo #(
+// module async_fifo #(
 //     parameter DATA_WIDTH = 8,     // ширина данных (обычно 8 бит для UART)
 //     parameter FIFO_DEPTH = 16,    // глубина FIFO (должна быть степенью 2)
 //     parameter LOG2_DEPTH = $clog2(FIFO_DEPTH)  // автоматический расчет
@@ -199,71 +195,6 @@ endmodule : fifo
 //     // Read data (combinational)
 //     assign RDo = mem[rd_ptr[LOG2_DEPTH-1:0]];
 
-// endmodule: fifo
-
-// `endif
-
-// `ifdef FIFO_MODE_2PORT
-
-// module fifo #(
-//     parameter DATA_WIDTH = 8,   // Ширина данных
-//     parameter FIFO_DEPTH = 16  // Глубина FIFO
-// )(
-//     // Общие сигналы
-//     input  logic                    CLKip,      // Тактовый сигнал
-//     input  logic                    RSTi,       // Сигнал сброса
-    
-//     // Порт записи
-//     input  logic [DATA_WIDTH-1:0]   DATAi, // Входные данные
-//     input  logic                    WEi,     // Разрешение записи
-//     output logic                    FULLo,   // Флаг переполнения
-    
-//     // Порт чтения
-//     output logic [DATA_WIDTH-1:0]   DATAo, // Выходные данные
-//     input  logic                    RDi,     // Разрешение чтения
-//     output logic                    EMPTYo   // Флаг пустоты
-// );
-//     // Внутренняя память FIFO
-//     logic [DATA_WIDTH-1:0] fifo_mem [0:FIFO_DEPTH-1];
-    
-//     // Указатели и счетчик
-//     logic [$clog2(FIFO_DEPTH)-1:0] wr_ptr = 0;
-//     logic [$clog2(FIFO_DEPTH)-1:0] rd_ptr = 0;
-//     logic [$clog2(FIFO_DEPTH):0] count = 0;  // На 1 бит шире для учета переполнения
-    
-//     // Основная логика FIFO
-//     always_ff @(posedge CLKip or posedge RSTi) begin
-//         if (RSTi) begin
-//             wr_ptr <= 0;
-//             rd_ptr <= 0;
-//             count <= 0;
-//         end else begin
-//             // Логика записи
-//             if (WEi && !FULLo) begin
-//                 fifo_mem[wr_ptr] <= DATAi;
-//                 wr_ptr <= (wr_ptr == FIFO_DEPTH-1) ? 0 : wr_ptr + 1;
-//             end
-            
-//             // Логика чтения
-//             if (RDi && !EMPTYo) begin
-//                 DATAo <= fifo_mem[rd_ptr];
-//                 rd_ptr <= (rd_ptr == FIFO_DEPTH-1) ? 0 : rd_ptr + 1;
-//             end
-            
-//             // Обновление счетчика
-//             case ({WEi && !FULLo, RDi && !EMPTYo})
-//                 2'b01: count <= count - 1; // Только чтение
-//                 2'b10: count <= count + 1; // Только запись
-//                 2'b11: count <= count;     // Одновременные запись и чтение
-//                 default: ;                // Ничего не делать
-//             endcase
-//         end
-//     end
-    
-//     // Управление флагами состояния
-//     assign FULLo = (count == FIFO_DEPTH);
-//     assign EMPTYo = (count == 0);
-
-// endmodule: fifo
+// endmodule: async_fifo
 
 // `endif

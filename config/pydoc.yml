@@ -14,4 +14,4 @@ renderer:
 loaders:
   - type: python
     search_path: 
-      - test/lib
+      - ../test/lib

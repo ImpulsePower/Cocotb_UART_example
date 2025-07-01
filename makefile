@@ -52,9 +52,12 @@ D2_OUT_DIR = docs/img
 D2_SOURCES = $(shell find $(D2_SRC_DIR) -name '*.d2')
 
 # Design
+HEADER_FILE = header
 COCOTB_BUILD = test/build
 TOPLEVEL_FIFO = fifo
-TEST_FIFO_SOURCES = $(PWD)/src/$(TOPLEVEL_FIFO).sv
+TEST_FIFO_SOURCES = $(PWD)/src/$(HEADER_FILE).svh \
+					$(PWD)/src/$(TOPLEVEL_FIFO).sv
+					
 
 TOPLEVEL_RX = uart_rx
 TEST_RX_SOURCES = $(PWD)/src/$(TOPLEVEL_RX).sv \
@@ -76,7 +79,7 @@ TEST_UART_SOURCES = $(sort \
     				$(TEST_TX_SOURCES) \
     				$(TEST_AXI_SOURCES))		
 
-RESULTS_DIR = temp
+RESULTS_DIR = test/log
 WAVEFORM_DIR = test/dump
  
 PDOC_DIR = docs
@@ -103,7 +106,8 @@ $(D2_OUT_DIR)/%.$(FORMAT): $(D2_SRC_DIR)/%.d2
 	$(D2) $< $@
 
 # Cocotb rules
-COCOTB_RESULTS_FILE = temp/res_$(TOPLEVEL_FIFO).xml
+FIFO_RESULTS_FILE = $(RESULTS_DIR)/$(TOPLEVEL_FIFO)_results.xml
+RX_RESULTS_FILE = $(RESULTS_DIR)/$(TOPLEVEL_RX)_results.xml
 COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ps
 # WAVES ?= 1
@@ -150,6 +154,7 @@ test_fifo:
 	VERILOG_SOURCES="$(TEST_FIFO_SOURCES)" \
 	TOPLEVEL="$(TOPLEVEL_FIFO)" \
 	MODULE="test_$(TOPLEVEL_FIFO)" \
+	COCOTB_RESULTS_FILE="$(FIFO_RESULTS_FILE)" \
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_FIFO)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
@@ -163,6 +168,7 @@ test_rx:
 	VERILOG_SOURCES="$(TEST_RX_SOURCES)" \
 	TOPLEVEL="$(TOPLEVEL_RX)" \
 	MODULE="test_$(TOPLEVEL_RX)" \
+	COCOTB_RESULTS_FILE="$(RX_RESULTS_FILE)" \
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_RX)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
