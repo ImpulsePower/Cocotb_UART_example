@@ -187,5 +187,9 @@ end
         DONEo = done;
     end
 
+    initial begin
+        $dumpfile("test/dump/uart_rx.fst");
+        $dumpvars(0, uart_rx);
+    end
 
 endmodule: uart_rx
