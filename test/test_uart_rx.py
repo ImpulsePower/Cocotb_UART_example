@@ -22,6 +22,8 @@ cocotb.RANDOM_SEED = SEED
 dc = DesignConstants()
 tbc = TestbenchConstants(design=dc)
 
+mon_event = cocotb.triggers.Event()
+
 # @cocotb.test()
 # async def test_uart_rx(dut,sig_in="RXi",sig_out="DATAo"):
 #     """
@@ -34,7 +36,6 @@ tbc = TestbenchConstants(design=dc)
 
 async def uart_send_byte(rx_pin, byte):
     """Генерация UART фрейма на линии RX"""
-    await Timer(tbc.BIT_period, units=tbc.UNIT)
     # Старт-бит
     rx_pin.value = 0
     await Timer(tbc.BIT_period, units=tbc.UNIT)
@@ -79,9 +80,14 @@ async def delayed_check(dut, signal_name: str, cycles: int, expected: int) -> No
     get_value = getattr(dut, signal_name).value
     if get_value != expected:
         raise AssertionError(f"Mismatch! {signal_name}: {get_value} != {expected}\n")
-    
+
+async def monitor(signal):
+    while True:
+        await RisingEdge(signal)
+        mon_event.set()
+
 @cocotb.test()
-async def test_uart_rx_single_byte(dut):
+async def rx_single_byte(dut):
     """Проверка корректного приема одного байта"""
     ports = UART_RX_ports(dut)
     # Generate clock and reset
@@ -90,124 +96,120 @@ async def test_uart_rx_single_byte(dut):
         await generate_reset(tbc,ports)   
 
     # Установка скорости 9600 бод
+    # update_baud_rate(tbc,9600)
+    ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 9600
     ports.BAUD_RATE_WE.value = 1
-    ports.BAUD_RATE.value = 9600
     await RisingEdge(ports.CLK)
     ports.BAUD_RATE_WE.value = 0
     
     # Генерация фрейма (0x55 с правильным стоп-битом)
     byte_to_send = 0x55
+    done_wait_task = cocotb.start_soon(monitor(ports.DONE))
     await uart_send_byte(ports.RX, byte_to_send)
-    
+    await mon_event.wait()
+    done_wait_task.kill()
     # Проверка результата
-    await RisingEdge(ports.DONE)
     assert ports.DATA.value == byte_to_send, f"Ожидалось {hex(byte_to_send)}, получено {hex(dut.DATAo.value)}"
     assert ports.READY.value == 1, "Флаг READY не установлен"
 
-# @cocotb.test()
-# async def test_uart_rx_overflow(dut):
-#     """Проверка обработки слишком высокой скорости"""
-#     clock = Clock(dut.CLKip, 10, units="ns")
-#     cocotb.start_soon(clock.start())
+@cocotb.test()
+async def rx_sequence(dut):
+    """Проверка приема последовательности байтов"""
+    ports = UART_RX_ports(dut)
+    # Generate clock and reset
+    await cocotb.start(generate_clock(tbc,ports))
+    if (tbc.NEED_RST): 
+        await generate_reset(tbc,ports)   
     
-#     # Установка недопустимой скорости (выше максимальной)
-#     dut.BAUD_RATE_WEi.value = 1
-#     dut.BAUD_RATEi.value = FREQ_CLK//2  # 50 Mbps!
-#     await RisingEdge(dut.CLKip)
-#     dut.BAUD_RATE_WEi.value = 0
+    # Настройка 115200 бод
+    ports.BAUD_RATE_WE.value = 1
+    ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 115200
+    await RisingEdge(ports.CLK)
+    ports.BAUD_RATE_WE.value = 0
     
-#     # Попытка передачи
-#     await uart_send_byte(dut.RXi, 0xAA, baud_rate=FREQ_CLK//2, clock_freq=100e6)
-    
-#     # Должен быть флаг ошибки (если реализован в модуле)
-#     if hasattr(dut, 'ERRORo'):
-#         await RisingEdge(dut.ERRORo)
+    test_sequence = [0x00, 0xFF, 0x55, 0xAA]
+    done_wait_task = cocotb.start_soon(monitor(ports.DONE))
+    for byte in test_sequence:
+        await uart_send_byte(ports.RX, byte)
+        # await RisingEdge(dut.DONEo)
+        await mon_event.wait()
+        done_wait_task.kill()
+        assert dut.DATAo.value == byte
+        dut.BAUD_RATE_RDi.value = 1  # Подтверждение чтения
+        await RisingEdge(ports.CLK)
+        dut.BAUD_RATE_RDi.value = 0
 
-# @cocotb.test()
-# async def test_uart_rx_sequence(dut):
-#     """Проверка приема последовательности байтов"""
-#     clock = Clock(dut.CLKip, 10, units="ns")
-#     cocotb.start_soon(clock.start())
+@cocotb.test()
+async def rx_overflow(dut):
+    """Проверка обработки слишком высокой скорости"""
+    ports = UART_RX_ports(dut)
+    # Generate clock and reset
+    await cocotb.start(generate_clock(tbc,ports))
+    if (tbc.NEED_RST): 
+        await generate_reset(tbc,ports)   
     
-#     # Настройка 115200 бод
-#     dut.BAUD_RATE_WEi.value = 1
-#     dut.BAUD_RATEi.value = 115200
-#     await RisingEdge(dut.CLKip)
-#     dut.BAUD_RATE_WEi.value = 0
+    # Установка недопустимой скорости (выше максимальной)
+    ports.BAUD_RATE_WE.value = 1
+    ports.BAUD_RATE.value = dc.CLOCK_FREQ // 2  # 50 Mbps!
+    await RisingEdge(ports.CLK)
+    ports.BAUD_RATE_WE.value = 0
+    byte_to_send = 0xAA
+    # Попытка передачи
+    await uart_send_byte(dut.RXi, byte_to_send)
     
-#     test_sequence = [0x00, 0xFF, 0x55, 0xAA]
-    
-#     for byte in test_sequence:
-#         await uart_send_byte(dut.RXi, byte, baud_rate=115200, clock_freq=100e6)
-#         await RisingEdge(dut.DONEo)
-#         assert dut.DATAo.value == byte
-#         dut.BAUD_RATE_RDi.value = 1  # Подтверждение чтения
-#         await RisingEdge(dut.CLKip)
-#         dut.BAUD_RATE_RDi.value = 0
+    # Должен быть флаг ошибки (если реализован в модуле)
+    assert ports.DATA.value != byte_to_send, f"Ожидалось 0, получено {byte_to_send}"
 
-# @cocotb.test()
-# async def test_uart_rx_glitch(dut):
-#     """Проверка устойчивости к помехам"""
-#     clock = Clock(dut.CLKip, 10, units="ns")
-#     cocotb.start_soon(clock.start())
-    
-#     # Генерация ложного старт-бита
-#     await Timer(100, units="ns")
-#     dut.RXi.value = 0  # Старт-бит
-#     await Timer(1e6/9600/2, units="ns")  # Половина битового интервала
-#     dut.RXi.value = 1  # Возврат в idle
-    
-#     # Проверка что READY не активировался
-#     await Timer(1e6/9600*2, units="ns")
-#     assert dut.READYo.value == 0, "Ложное срабатывание приема"
+@cocotb.test()
+async def rx_glitch(dut):
+    """Проверка устойчивости к помехам"""
+    ports = UART_RX_ports(dut)
+    # Generate clock and reset
+    await cocotb.start(generate_clock(tbc,ports))
+    if (tbc.NEED_RST): 
+        await generate_reset(tbc,ports)  
 
-# @cocotb.test()
-# async def test_uart_rx_baud_change(dut):
-#     """Проверка смены скорости передачи"""
-#     clock = Clock(dut.CLKip, 10, units="ns")
-#     cocotb.start_soon(clock.start())
+    ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 9600
+    # Генерация ложного старт-бита
+    await Timer(100, units="ns")
+    dut.RXi.value = 0  # Старт-бит
+    await Timer(int(tbc.design.CLOCK_FREQ / tbc.design.BAUD_RATE / 2), units="ns")  # Половина битового интервала
+    dut.RXi.value = 1  # Возврат в idle
     
-#     # Первый байт на 9600 бод
-#     dut.BAUD_RATE_WEi.value = 1
-#     dut.BAUD_RATEi.value = 9600
-#     await RisingEdge(dut.CLKip)
-#     dut.BAUD_RATE_WEi.value = 0
-    
-#     await uart_send_byte(dut.RXi, 0x55, baud_rate=9600)
-#     await RisingEdge(dut.DONEo)
-    
-#     # Смена на 115200 бод
-#     dut.BAUD_RATE_WEi.value = 1
-#     dut.BAUD_RATEi.value = 115200
-#     await RisingEdge(dut.CLKip)
-#     dut.BAUD_RATE_WEi.value = 0
-    
-#     await uart_send_byte(dut.RXi, 0xAA, baud_rate=115200)
-#     await RisingEdge(dut.DONEo)
+    # Проверка что READY не активировался
+    await Timer(int(tbc.design.CLOCK_FREQ/tbc.design.BAUD_RATE*2), units="ns")
+    assert dut.READYo.value == 0, "Ложное срабатывание приема"
 
-# @cocotb.test()
-# async def test_uart_rx_baud_change(dut):
-#     """Проверка смены скорости передачи"""
-#     clock = Clock(dut.CLKip, 10, units="ns")
-#     cocotb.start_soon(clock.start())
+@cocotb.test()
+async def baud_change(dut):
+    """Проверка смены скорости передачи"""
+    ports = UART_RX_ports(dut)
+    # Generate clock and reset
+    await cocotb.start(generate_clock(tbc,ports))
+    if (tbc.NEED_RST): 
+        await generate_reset(tbc,ports)  
+    done_wait_task = cocotb.start_soon(monitor(ports.DONE))
+    # Первый байт на 9600 бод
+    ports.BAUD_RATE_WE.value = 1
+    ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 9600
+    await RisingEdge(ports.CLK)
+    ports.BAUD_RATE_WE.value = 0
     
-#     # Первый байт на 9600 бод
-#     dut.BAUD_RATE_WEi.value = 1
-#     dut.BAUD_RATEi.value = 9600
-#     await RisingEdge(dut.CLKip)
-#     dut.BAUD_RATE_WEi.value = 0
+    byte_to_send = 0x55
+    await uart_send_byte(ports.RX, byte_to_send)
+    await mon_event.wait()
+    done_wait_task.kill()
     
-#     await uart_send_byte(dut.RXi, 0x55, baud_rate=9600)
-#     await RisingEdge(dut.DONEo)
-    
-#     # Смена на 115200 бод
-#     dut.BAUD_RATE_WEi.value = 1
-#     dut.BAUD_RATEi.value = 115200
-#     await RisingEdge(dut.CLKip)
-#     dut.BAUD_RATE_WEi.value = 0
-    
-#     await uart_send_byte(dut.RXi, 0xAA, baud_rate=115200)
-#     await RisingEdge(dut.DONEo)    
+    # Смена на 115200 бод
+    ports.BAUD_RATE_WE.value = 1
+    ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 115200
+    await RisingEdge(ports.CLK)
+    ports.BAUD_RATE_WE.value = 0
+
+    byte_to_send = 0xAA
+    await uart_send_byte(ports.RX, byte_to_send)
+    await mon_event.wait()
+    done_wait_task.kill()   
 
 # if __name__ == "__main__":
 # if cocotb.SIM_NAME:

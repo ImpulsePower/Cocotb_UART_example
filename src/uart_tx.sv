@@ -166,5 +166,9 @@ module uart_tx
         DONEo = done;
         DATAo = data;
     end
-    
+
+    initial begin
+        $dumpfile("test/dump/uart_tx.fst");
+        $dumpvars(0, uart_tx);
+    end
 endmodule: uart_tx

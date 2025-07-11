@@ -22,22 +22,21 @@ SUPPORTED_TL_LANG = verilog vhdl
 
 ifneq ($(filter $(FORMAT),$(SUPPORTED_D2_FORMATS)),)
 else
-  $(error Unsupported format '$(FORMAT)'. \
-  Supported: $(SUPPORTED_D2_FORMATS))
+	$(error Unsupported format '$(FORMAT)'. \
+  	Supported: $(SUPPORTED_D2_FORMATS))
 endif
 
 ifneq ($(filter $(SIM),$(SUPPORTED_SIMS)),)
 else
-  $(error Unsupported format '$(SIM)'. \
-  Supported: $(SUPPORTED_SIMS))
+	$(error Unsupported format '$(SIM)'. \
+	Supported: $(SUPPORTED_SIMS))
 endif
 
 ifneq ($(filter $(TOPLEVEL_LANG),$(SUPPORTED_TL_LANG)),)
 else
-  $(error Unsupported format '$(TOPLEVEL_LANG)'. \
-  Supported: $(SUPPORTED_TL_LANG))
+	$(error Unsupported format '$(TOPLEVEL_LANG)'. \
+	Supported: $(SUPPORTED_TL_LANG))
 endif
-
 # ==============================================================
 
 # ========================== PATHS =============================
@@ -145,7 +144,7 @@ pdoc:
 
 
 # Testing
-test: test_fifo test_rx
+test: test_fifo test_rx test_tx
 
 # Cocotb testing fifo
 test_fifo:

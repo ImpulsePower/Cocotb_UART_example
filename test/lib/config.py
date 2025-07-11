@@ -71,8 +71,8 @@ class Units:
             UNIT: X (value=X)
         """
         return f"<UNIT: {self.name} (value={self.value})>"
-    
-@dataclass(frozen=True)
+
+@dataclass
 class DesignConstants:
     """
     Design-related constants
@@ -91,7 +91,7 @@ class DesignConstants:
     RST_NAME: str   = "RSTi"
     DONE_NAME: str  = "DONEo"
 
-@dataclass(frozen=True)
+@dataclass
 class TestbenchConstants:
     """
     Testbench-related constants
@@ -114,7 +114,7 @@ class TestbenchConstants:
     RESET_DELAY: int = 10
     DELAY: int = 20
     
-    @cached_property
+    @property
     def CLK_period(self) -> float:
         """Calculates the time of the clock period in current units
 
@@ -123,7 +123,7 @@ class TestbenchConstants:
         """
         return Units().value / self.design.CLOCK_FREQ
     
-    @cached_property
+    @property
     def BIT_period(self) -> int:
         """Bit period in current units
 
@@ -132,7 +132,7 @@ class TestbenchConstants:
         """
         return int((self.design.CLOCK_FREQ / self.design.BAUD_RATE) * self.CLK_period)
     
-    @cached_property
+    @property
     def TB_DELAY(self) -> int:
         """Testbench delay in current units
 

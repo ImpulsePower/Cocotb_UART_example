@@ -1,8 +1,10 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1751400849" />
-    <testcase name="test_uart_rx_single_byte" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="83" time="7.957425832748413" sim_time_ns="894190.001" ratio_time="112371.76692492729">
-      <failure message="Test failed with RANDOM_SEED=123" />
-    </testcase>
+    <property name="random_seed" value="1752263274" />
+    <testcase name="rx_single_byte" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="89" time="8.484519720077515" sim_time_ns="1041690.001" ratio_time="122775.36447171852" />
+    <testcase name="rx_sequence" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="115" time="2.8154220581054688" sim_time_ns="347230.00100000005" ratio_time="123331.420239584" />
+    <testcase name="rx_overflow" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="142" time="0.6990811824798584" sim_time_ns="86830.00099999993" ratio_time="124205.89078365249" />
+    <testcase name="rx_glitch" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="163" time="0.21530413627624512" sim_time_ns="26171.00099999993" ratio_time="121553.63781038248" />
+    <testcase name="baud_change" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="183" time="9.504785776138306" sim_time_ns="1128490.001" ratio_time="118728.6097318538" />
   </testsuite>
 </testsuites>

@@ -136,12 +136,13 @@ end
                 // Start bit wait mode
                 IDLE: begin
                     ready          <= 1;
-                    done           <= 0;
+                    // done           <= 0;
                     if (rx == 1'b0) STATE <= rx ? IDLE : START;
                 end
                 // Waiting up to half of the start bit period
                 START: begin
                     ready          <= 0;
+                    done           <= 0;
                     if (half_rx_strb) begin
                         if (rx == 1'b0) STATE <= rx ? IDLE : RECEIVE;
                     end

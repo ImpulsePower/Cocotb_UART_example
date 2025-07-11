@@ -69,7 +69,7 @@ async def check_uart_frame(tx_pin, expected_byte, baud_rate=9600, clock_freq=100
     assert tx_pin.value == 1, "Стоп-бит должен быть 1"
 
 @cocotb.test()
-async def test_uart_tx_single_byte(dut):
+async def single_byte(dut):
     """Проверка передачи одного байта"""
     clock = Clock(dut.CLKip, 10, units="ns")  # 100 MHz
     cocotb.start_soon(clock.start())
@@ -101,7 +101,7 @@ async def test_uart_tx_single_byte(dut):
     assert dut.BUSYo.value == 0, "Флаг BUSY должен сброситься"
 
 @cocotb.test()
-async def test_uart_tx_sequence(dut):
+async def tx_sequence(dut):
     """Проверка передачи последовательности байтов"""
     clock = Clock(dut.CLKip, 10, units="ns")
     cocotb.start_soon(clock.start())
@@ -121,7 +121,7 @@ async def test_uart_tx_sequence(dut):
         await RisingEdge(dut.DONEo)
 
 @cocotb.test()
-async def test_uart_tx_baud_change(dut):
+async def baud_change(dut):
     """Проверка смены скорости передачи"""
     clock = Clock(dut.CLKip, 10, units="ns")
     cocotb.start_soon(clock.start())
@@ -143,7 +143,7 @@ async def test_uart_tx_baud_change(dut):
     await check_uart_frame(dut.DATAo, 0xAA, baud_rate=115200)
 
 @cocotb.test()
-async def test_uart_tx_abort(dut):
+async def tx_abort(dut):
     """Проверка прерывания передачи"""
     clock = Clock(dut.CLKip, 10, units="ns")
     cocotb.start_soon(clock.start())
@@ -167,7 +167,7 @@ async def test_uart_tx_abort(dut):
     assert dut.BUSYo.value == 0, "Флаг BUSY должен сброситься"
 
 @cocotb.test()
-async def test_uart_tx_overflow(dut):
+async def overflow(dut):
     """Проверка недопустимой скорости передачи"""
     clock = Clock(dut.CLKip, 10, units="ns")
     cocotb.start_soon(clock.start())
