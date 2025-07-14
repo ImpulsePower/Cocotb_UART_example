@@ -114,8 +114,8 @@ module uart_tx
                 // Waiting for TX EN bit 
                 IDLE: begin
                     data        <= 1;
-                    done        <= 0;
                     bit_idx     <= 0;
+                    busy        <= 0;
                     if (tx_en == 1'b1) begin
                         busy <= 1'b1;
                         STATE <= START;
@@ -126,7 +126,8 @@ module uart_tx
                 end
                 // Transmit start bit
                 START: begin
-                    data    <= 0;
+                    data        <= 0;
+                    done        <= 0;
                     if (tx_strb) STATE <= tx_strb ? TRANSMIT : START;
                 end
                 // Transmit process
@@ -147,8 +148,8 @@ module uart_tx
                 STOP: begin
                     data    <= 1;
                     if (tx_strb) begin
-                        done        <= 1;
-                        busy        <= 1'b0;
+                        // done        <= 1;
+                        busy        <= 0;
                         STATE       <= IDLE;
                     end
                     else begin

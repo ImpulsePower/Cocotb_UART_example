@@ -87,7 +87,7 @@ async def monitor(signal):
         mon_event.set()
 
 @cocotb.test()
-async def rx_single_byte(dut):
+async def single_byte(dut):
     """Проверка корректного приема одного байта"""
     ports = UART_RX_ports(dut)
     # Generate clock and reset
@@ -109,11 +109,11 @@ async def rx_single_byte(dut):
     await mon_event.wait()
     done_wait_task.kill()
     # Проверка результата
-    assert ports.DATA.value == byte_to_send, f"Ожидалось {hex(byte_to_send)}, получено {hex(dut.DATAo.value)}"
+    assert ports.DATA.value == byte_to_send, f"Exp {byte_to_send:X}, got {ports.DATA.value:X}"
     assert ports.READY.value == 1, "Флаг READY не установлен"
 
 @cocotb.test()
-async def rx_sequence(dut):
+async def sequence(dut):
     """Проверка приема последовательности байтов"""
     ports = UART_RX_ports(dut)
     # Generate clock and reset
@@ -140,7 +140,7 @@ async def rx_sequence(dut):
         dut.BAUD_RATE_RDi.value = 0
 
 @cocotb.test()
-async def rx_overflow(dut):
+async def overflow(dut):
     """Проверка обработки слишком высокой скорости"""
     ports = UART_RX_ports(dut)
     # Generate clock and reset
@@ -158,10 +158,11 @@ async def rx_overflow(dut):
     await uart_send_byte(dut.RXi, byte_to_send)
     
     # Должен быть флаг ошибки (если реализован в модуле)
-    assert ports.DATA.value != byte_to_send, f"Ожидалось 0, получено {byte_to_send}"
+    assert ports.DATA.value != (byte_to_send, 
+                                f"Ожидалось 0, получено {byte_to_send}")
 
 @cocotb.test()
-async def rx_glitch(dut):
+async def glitch(dut):
     """Проверка устойчивости к помехам"""
     ports = UART_RX_ports(dut)
     # Generate clock and reset
@@ -173,11 +174,13 @@ async def rx_glitch(dut):
     # Генерация ложного старт-бита
     await Timer(100, units="ns")
     dut.RXi.value = 0  # Старт-бит
-    await Timer(int(tbc.design.CLOCK_FREQ / tbc.design.BAUD_RATE / 2), units="ns")  # Половина битового интервала
+    await Timer(int(tbc.design.CLOCK_FREQ / tbc.design.BAUD_RATE / 2), 
+                units="ns")
     dut.RXi.value = 1  # Возврат в idle
     
     # Проверка что READY не активировался
-    await Timer(int(tbc.design.CLOCK_FREQ/tbc.design.BAUD_RATE*2), units="ns")
+    await Timer(int(tbc.design.CLOCK_FREQ/tbc.design.BAUD_RATE*2), 
+                units="ns")
     assert dut.READYo.value == 0, "Ложное срабатывание приема"
 
 @cocotb.test()
