@@ -28,7 +28,7 @@ module uart_tx
     // ===========================================================================
     int unsigned                    baud_rate; // var for BAUD_RATEi
     int unsigned                    bit_cntr; // var for counter (rx_strb)
-    int unsigned                    tx_strb; // var for strobe bit
+    bit                             tx_strb; // var for strobe bit
     logic [$clog2(DATA_WDTH)-1:0]   bit_idx; // var for bit counter (index)
     int unsigned                    clk_count; // var for counter
     logic                           data; // var for DATAo
@@ -53,7 +53,7 @@ module uart_tx
 
     // Combinational calculation of the number of clock pulses per bit
     always_comb begin: calc_bit_value
-        baud_rate = BAUD_RATEi;
+        baud_rate = (BAUD_RATEi == 0) ? 115200 : BAUD_RATEi;
         bit_cntr = FREQ_CLK / baud_rate;
     end
 
@@ -61,80 +61,62 @@ module uart_tx
     always @(posedge CLKip) begin: strobe_logic       
         case (STATE)
             IDLE: begin
-                clk_count       <= 0;
-                // half_tx_strb    <= 0;
-                // tx_strb         <= 0;
-                bit_idx         <= 0;
+                clk_count   <= 0;
+                tx_strb     <= 0;
+                bit_idx     <= 0;
             end
-            START: begin
-                if (clk_count == bit_cntr) begin
-                    tx_strb     <= 1;
-                    clk_count   <= 0;
-                end
-                else begin
-                    tx_strb <= 0;
-                    clk_count <= ++clk_count;
-                end                
-            end
-            TRANSMIT: begin
-                if (clk_count == bit_cntr) begin
-                    tx_strb     <= 1;
-                    clk_count   <= 0;
-                end
-                else begin
-                    tx_strb <= 0;
-                    clk_count <= ++clk_count;
-                end                  
-            end
-            STOP: begin
-                if (clk_count == bit_cntr) begin
-                    tx_strb     <= 1;
-                    clk_count   <= 0;
-                end
-                else begin
-                    tx_strb <= 0;
-                    clk_count <= ++clk_count;
-                end                  
-            end  
             default: begin
-                clk_count <= 0;
-                STATE <= IDLE;
-            end
+                if (clk_count >= bit_cntr) begin  // Изменено на >= для надежности
+                    tx_strb <= 1;
+                    clk_count <= 0;
+                end
+                else begin
+                    tx_strb <= 0;
+                    clk_count <= clk_count + 1;  // Убрано ++, используется неблокирующее присваивание
+                end
+            end  
         endcase
     end
 
     // Implementation of the UART transmitter operation logic
-    always_ff @(posedge CLKip) begin: fsm_uart_tx
+    always_ff @(posedge CLKip or posedge rst) begin: fsm_uart_tx
         if (rst) begin
             bit_idx     <= 0;
             clk_count   <= 0;
+            busy        <= 0;
+            tx_strb     <= 0;
+            done <= 0;
         end
         else begin 
             case (STATE)
                 // Waiting for TX EN bit 
                 IDLE: begin
                     data        <= 1;
-                    bit_idx     <= 0;
-                    busy        <= 0;
                     if (tx_en == 1'b1) begin
                         busy <= 1'b1;
+                        done        <= 0;
                         STATE <= START;
                     end
-                    else begin 
-                        STATE <= IDLE;
-                    end
+                    // else begin 
+                    //     STATE <= IDLE;
+                        
+                    //     bit_idx     <= 0;
+                    // end
                 end
                 // Transmit start bit
                 START: begin
                     data        <= 0;
-                    done        <= 0;
+                    // done        <= 0;
                     if (tx_strb) STATE <= tx_strb ? TRANSMIT : START;
+                    else begin
+                        STATE <= START;        
+                    end
                 end
                 // Transmit process
                 TRANSMIT: begin
-                    data <= TXi[bit_idx];
                     if (tx_strb) begin
-                        if (bit_idx < DATA_WDTH - 1) bit_idx = bit_idx + 1;
+                        data <= TXi[bit_idx];
+                        if (bit_idx < DATA_WDTH - 1) bit_idx <= bit_idx + 1;
                         else begin
                             bit_idx <= 0;
                             STATE <= STOP;
@@ -142,18 +124,20 @@ module uart_tx
                     end
                     else begin
                         STATE <= TRANSMIT;
-                    end    
+                    end
+                        
                 end
                 // Transmit stop bit
                 STOP: begin
-                    data    <= 1;
                     if (tx_strb) begin
-                        // done        <= 1;
-                        busy        <= 0;
                         STATE       <= IDLE;
+                        done        <= 1;
+                        busy        <= 0;
+                        data        <= 1;
                     end
                     else begin
                         STATE <= STOP;
+                        data    <= 1;
                     end
                 end
                 // Default state
@@ -161,6 +145,7 @@ module uart_tx
             endcase
         end
     end   
+
     // Combinational logic 
     always_comb begin: set_out
         BUSYo = busy;
