@@ -40,6 +40,12 @@ endif
 # ==============================================================
 
 # ========================== PATHS =============================
+CONDA_EXE := $(HOME)/miniconda/bin/conda
+D2_EXE := $(HOME)/.d2/d2
+POETRY_EXE := .poetry/bin/poetry
+VERILATOR_EXE := $(shell which verilator)
+PANDOC_EXE := $(shell which pandoc)
+
 # Paths of Pandoc
 MD_SRC_DIR = docs
 PDF_DIR = $(MD_SRC_DIR)/pdf
@@ -124,6 +130,62 @@ COCOTB_HDL_TIMEPRECISION = 1ps
 # ========================= TARGETS ============================
 # Default target
 all: test
+
+# Install dependencies
+# Install Miniconda
+install-conda: check-conda
+check-conda:
+	@if [ ! -f "$(CONDA_EXE)" ]; then \
+		echo "Устанавливаем Miniconda..."; \
+		chmod +x install_conda.sh && ./install_conda.sh; \
+		echo "Miniconda установлена"; \
+	else \
+		echo "Miniconda уже установлена"; \
+	fi
+
+# Install d2
+install-d2: check-d2
+check-d2:
+	@if [ ! -f "$(D2_EXE)" ]; then \
+		echo "Устанавливаем D2..."; \
+		chmod +x install_d2.sh && ./install_d2.sh; \
+		echo "D2 установлен"; \
+	else \
+		echo "D2 уже установлен"; \
+	fi
+
+# УInstall Pandoc
+install-pandoc: check-pandoc
+check-pandoc:
+	@if [ ! -f "$(PANDOC_EXE)" ]; then \
+		echo "Устанавливаем Pandoc..."; \
+		chmod +x install_pandoc.sh && ./install_pandoc.sh; \
+		echo "Pandoc установлен"; \
+	else \
+		echo "Pandoc уже установлен"; \
+	fi
+
+# Install Poetry
+install-poetry: check-poetry
+check-poetry:
+	@if [ ! -f "$(POETRY_EXE)" ]; then \
+		echo "Устанавливаем Poetry..."; \
+		chmod +x install_poetry.sh && ./install_poetry.sh; \
+		echo "Poetry установлен"; \
+	else \
+		echo "Poetry уже установлен"; \
+	fi
+
+# Install verilator
+install-verilator: check-verilator
+check-verilator:
+	@if [ -z "$(VERILATOR_EXE)" ]; then \
+		echo "Устанавливаем Verilator..."; \
+		chmod +x install_verilator.sh && ./install_verilator.sh; \
+		echo "Verilator установлен"; \
+	else \
+		echo "Verilator уже установлен"; \
+	fi
 
 # Docs
 docs: pdoc docs_d2 docs_pdf
@@ -222,7 +284,7 @@ clean:
 	rm -rf $(PDOC_DIR)/$(DOC_NAME).md
 
 # Clearing folders of generated files
-clean_build:
+clean_all:
 	rm -rf $(D2_OUT_DIR)
 	rm -rf $(COCOTB_BUILD)
 	rm -rf $(PDF_DIR)

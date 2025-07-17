@@ -66,13 +66,13 @@ module uart_tx
                 bit_idx     <= 0;
             end
             default: begin
-                if (clk_count >= bit_cntr) begin  // Изменено на >= для надежности
+                if (clk_count >= bit_cntr) begin
                     tx_strb <= 1;
                     clk_count <= 0;
                 end
                 else begin
                     tx_strb <= 0;
-                    clk_count <= clk_count + 1;  // Убрано ++, используется неблокирующее присваивание
+                    clk_count <= clk_count + 1;
                 end
             end  
         endcase
@@ -85,7 +85,7 @@ module uart_tx
             clk_count   <= 0;
             busy        <= 0;
             tx_strb     <= 0;
-            done <= 0;
+            done        <= 0;
         end
         else begin 
             case (STATE)
