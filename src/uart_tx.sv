@@ -114,8 +114,8 @@ module uart_tx
                 end
                 // Transmit process
                 TRANSMIT: begin
+                    data <= TXi[bit_idx];
                     if (tx_strb) begin
-                        data <= TXi[bit_idx];
                         if (bit_idx < DATA_WDTH - 1) bit_idx <= bit_idx + 1;
                         else begin
                             bit_idx <= 0;

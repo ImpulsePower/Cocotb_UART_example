@@ -63,7 +63,6 @@ TOPLEVEL_FIFO = fifo
 TEST_FIFO_SOURCES = $(PWD)/src/$(HEADER_FILE).svh \
 					$(PWD)/src/$(TOPLEVEL_FIFO).sv
 					
-
 TOPLEVEL_RX = uart_rx
 TEST_RX_SOURCES = $(PWD)/src/$(TOPLEVEL_RX).sv \
 					$(PWD)/src/sync.sv \
@@ -90,6 +89,7 @@ WAVEFORM_DIR = test/dump
 PDOC_DIR = docs
 DOC_NAME = docs
 CONFIG = config/pydoc.yml
+SCRIPTS_DIR := scripts
 # ==============================================================
 
 # ========================= RULES ==============================
@@ -132,60 +132,69 @@ COCOTB_HDL_TIMEPRECISION = 1ps
 all: test
 
 # Install dependencies
-# Install Miniconda
+# Установка Miniconda
 install-conda: check-conda
 check-conda:
 	@if [ ! -f "$(CONDA_EXE)" ]; then \
 		echo "Устанавливаем Miniconda..."; \
-		chmod +x install_conda.sh && ./install_conda.sh; \
+		chmod +x $(SCRIPTS_DIR)/install_conda.sh && $(SCRIPTS_DIR)/install_conda.sh; \
 		echo "Miniconda установлена"; \
 	else \
 		echo "Miniconda уже установлена"; \
 	fi
 
-# Install d2
+# Установка D2
 install-d2: check-d2
 check-d2:
 	@if [ ! -f "$(D2_EXE)" ]; then \
 		echo "Устанавливаем D2..."; \
-		chmod +x install_d2.sh && ./install_d2.sh; \
+		chmod +x $(SCRIPTS_DIR)/install_d2.sh && $(SCRIPTS_DIR)/install_d2.sh; \
 		echo "D2 установлен"; \
 	else \
 		echo "D2 уже установлен"; \
 	fi
 
-# УInstall Pandoc
+# Установка Pandoc
 install-pandoc: check-pandoc
 check-pandoc:
 	@if [ ! -f "$(PANDOC_EXE)" ]; then \
 		echo "Устанавливаем Pandoc..."; \
-		chmod +x install_pandoc.sh && ./install_pandoc.sh; \
+		chmod +x $(SCRIPTS_DIR)/install_pandoc.sh && $(SCRIPTS_DIR)/install_pandoc.sh; \
 		echo "Pandoc установлен"; \
 	else \
 		echo "Pandoc уже установлен"; \
 	fi
 
-# Install Poetry
+# Установка Poetry
 install-poetry: check-poetry
 check-poetry:
 	@if [ ! -f "$(POETRY_EXE)" ]; then \
 		echo "Устанавливаем Poetry..."; \
-		chmod +x install_poetry.sh && ./install_poetry.sh; \
+		chmod +x $(SCRIPTS_DIR)/install_poetry.sh && $(SCRIPTS_DIR)/install_poetry.sh; \
 		echo "Poetry установлен"; \
 	else \
 		echo "Poetry уже установлен"; \
 	fi
 
-# Install verilator
+# Установка Verilator
 install-verilator: check-verilator
 check-verilator:
 	@if [ -z "$(VERILATOR_EXE)" ]; then \
 		echo "Устанавливаем Verilator..."; \
-		chmod +x install_verilator.sh && ./install_verilator.sh; \
+		chmod +x $(SCRIPTS_DIR)/install_verilator.sh && $(SCRIPTS_DIR)/install_verilator.sh; \
 		echo "Verilator установлен"; \
 	else \
 		echo "Verilator уже установлен"; \
 	fi
+
+# Проверка всех зависимостей
+check-all:
+	@echo "Проверка установленных зависимостей:"
+	@$(MAKE) --no-print-directory check-conda
+	@$(MAKE) --no-print-directory check-d2
+	@$(MAKE) --no-print-directory check-pandoc
+	@$(MAKE) --no-print-directory check-poetry
+	@$(MAKE) --no-print-directory check-verilator
 
 # Docs
 docs: pdoc docs_d2 docs_pdf
@@ -283,12 +292,33 @@ clean:
 	rm -rf $(RESULTS_DIR)/*
 	rm -rf $(PDOC_DIR)/$(DOC_NAME).md
 
-# Clearing folders of generated files
+# Clearing folders of generated files and dependencies
 clean_all:
 	rm -rf $(D2_OUT_DIR)
 	rm -rf $(COCOTB_BUILD)
 	rm -rf $(PDF_DIR)
 	rm -rf $(RESULTS_DIR)
+	@echo "Удаление всех установленных зависимостей:"
+	@if [ -f "$(CONDA_EXE)" ]; then \
+		echo "Delete Miniconda..."; \
+		rm -rf $(HOME)/miniconda; \
+	fi
+	@if [ -f "$(D2_EXE)" ]; then \
+		echo "Delete D2..."; \
+		rm -rf $(HOME)/.d2; \
+	fi
+	@if [ -f "$(POETRY_EXE)" ]; then \
+		echo "Delete Poetry..."; \
+		rm -rf .poetry; \
+	fi
+	@if [ -n "$(PANDOC_EXE)" ]; then \
+		echo "Delete Pandoc..."; \
+		sudo apt remove -y pandoc texlive-*; \
+	fi
+	@if [ -n "$(VERILATOR_EXE)" ]; then \
+		echo "Delete Verilator..."; \
+		sudo apt remove -y verilator; \
+	fi
 
 .PHONY: all clean
 # ==============================================================

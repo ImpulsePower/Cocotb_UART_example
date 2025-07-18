@@ -49,26 +49,25 @@ async def generate_reset(tbc,ports) -> None:
     # rst.value = 0
     ports.RST.value = 0
 
-async def check_uart_frame(tx_pin, expected_byte):
+async def check_uart_frame(tx_pin):
     """Проверка корректности UART фрейма"""
-    tx_wait_task = cocotb.start_soon(fall_monitor(tx_pin))
-    await mon_event.wait()
-    tx_wait_task.kill()
-    # Проверка старт-бита
-    # await FallingEdge(tx_pin)
+    # Ожидаем старт-бит (falling edge)
+    await FallingEdge(tx_pin)
+    # dut._log.info(f"Current simulation time: {cocotb.utils.get_sim_time(units='ns')} ns")
     assert tx_pin.value == 0, "Старт-бит должен быть 0"
-    await Timer(tbc.BIT_period*1.5, units="ns")  # Середина первого бита
     
-    # Проверка данных (LSB first)
+    # Ждем до середины первого бита данных
+    await Timer(tbc.BIT_period * 1.5, units="ns")
+    # dut._log.info(f"Current simulation time: {cocotb.utils.get_sim_time(units='ns')} ns")    
+    # Читаем биты данных (LSB first)
     received = 0
     for i in range(8):
-        received |= (tx_pin.value << i)
+        received |= (tx_pin.value.integer << i)
         await Timer(tbc.BIT_period, units="ns")
     
-    assert received == expected_byte, f"Ожидалось {expected_byte:X}, получено {received:X}"
-    
-    # Проверка стоп-бита
+    # Проверяем стоп-бит
     assert tx_pin.value == 1, "Стоп-бит должен быть 1"
+    return received
 
 async def monitor(signal):
     while True:
@@ -80,6 +79,12 @@ async def fall_monitor(signal):
         await FallingEdge(signal)
         mon_event.set()
 
+async def delayed_check(dut, signal_name: str, cycles: int, expected: int) -> None:
+    await Timer(cycles * tbc.CLK_period, units=tbc.UNIT)
+    get_value = getattr(dut, signal_name).value
+    if get_value != expected:
+        raise AssertionError(f"Mismatch! {signal_name}: {get_value} != {expected}\n")
+    
 @cocotb.test()
 async def single_byte(dut):
     """Проверка передачи одного байта"""
@@ -88,37 +93,33 @@ async def single_byte(dut):
     await cocotb.start(generate_clock(tbc,ports))
     if (tbc.NEED_RST): 
         await generate_reset(tbc,ports) 
-    
     # Сброс и инициализация
     ports.TX_EN.value = 0
-    await RisingEdge(ports.CLK)
     # Установка скорости 9600 бод
-    # dut.BAUD_RATEi.value = 9600
     ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 9600
+    
     done_wait_task = cocotb.start_soon(monitor(ports.DONE))
     # Запуск передачи
-    test_byte = 0x55
+    test_byte = 0xCD
     ports.TX_DATA.value = test_byte
     ports.TX_EN.value = 1
     await RisingEdge(ports.CLK)
-    await RisingEdge(ports.CLK)
-    await RisingEdge(ports.CLK)
-    await RisingEdge(ports.CLK)
+    # await RisingEdge(ports.CLK)
+    ports.TX_EN.value = 0
     
     # Проверка флагов состояния
-    assert ports.BUSY.value == 1, "Модуль должен быть в состоянии BUSY"
-    
+    cocotb.start_soon(delayed_check(dut, ports.busy, 3, 1))
     # Проверка выходного сигнала (бит за битом)
-    await check_uart_frame(ports.DATA_OUT, test_byte)
-    ports.TX_EN.value = 0
+
+    received = await check_uart_frame(ports.DATA_OUT)
+    assert received == test_byte, f"Ожидалось {test_byte:X}, получено {received:X}"
     # Проверка завершения
-    # await RisingEdge(dut.DONEo)
     await mon_event.wait()
     done_wait_task.kill()
     assert dut.BUSYo.value == 0, "Флаг BUSY должен сброситься"
 
 @cocotb.test()
-async def tx_sequence(dut):
+async def sequence(dut):
     """Проверка передачи последовательности байтов"""
     ports = UART_TX_ports(dut)
     # Generate clock and reset
@@ -129,15 +130,17 @@ async def tx_sequence(dut):
     # Настройка 115200 бод
     ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 115200
     
-    test_sequence = [0x00, 0xFF, 0x55, 0xAA]
+    test_sequence = [0x01, 0xFF, 0x55, 0xAA]
     
     for byte in test_sequence:
         ports.TX_DATA.value = byte
+        if ports.BUSY == 1:
+            await FallingEdge(ports.BUSY)
         ports.TX_EN.value = 1
         await RisingEdge(ports.CLK)
         ports.TX_EN.value = 0
-        
-        await check_uart_frame(ports.DATA_OUT, byte)
+        received = await check_uart_frame(ports.DATA_OUT)
+        assert received == byte, f"Ожидалось {byte:X}, получено {received:X}"
         await mon_event.wait()
         done_wait_task.kill()
 
@@ -149,26 +152,32 @@ async def baud_change(dut):
     await cocotb.start(generate_clock(tbc,ports))
     if (tbc.NEED_RST): 
         await generate_reset(tbc,ports) 
-    
+    ports.TX_EN.value = 0
     # Первый байт на 9600 бод
     ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 9600
-    ports.TX_DATA.value = 0x55
+    value = 0x55
+    ports.TX_DATA.value = value
     ports.TX_EN.value = 1
-    # await RisingEdge(dut.CLKip)
+    await RisingEdge(dut.CLKip)
     await RisingEdge(ports.CLK)
     ports.TX_EN.value = 0
-    await check_uart_frame(ports.DATA_OUT, 0x55)
-    
+    received = await check_uart_frame(ports.DATA_OUT)
+    assert received == value, f"Ожидалось {value:X}, получено {received:X}"
+    if ports.BUSY == 1:
+        await FallingEdge(ports.BUSY)
     # Второй байт на 115200 бод
     ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 115200
-    ports.TX_DATA.value = 0xAA
+    value = 0xAA
+    ports.TX_DATA.value = value
     ports.TX_EN.value = 1
     await RisingEdge(ports.CLK)
+    await RisingEdge(dut.CLKip)
     ports.TX_EN.value = 0
-    await check_uart_frame(ports.DATA_OUT, 0xAA)
+    received = await check_uart_frame(ports.DATA_OUT)
+    assert received == value, f"Ожидалось {value:X}, получено {received:X}"
 
 @cocotb.test()
-async def tx_abort(dut):
+async def abort(dut):
     """Проверка прерывания передачи"""
     ports = UART_TX_ports(dut)
     # Generate clock and reset
@@ -177,7 +186,7 @@ async def tx_abort(dut):
         await generate_reset(tbc,ports) 
     
     ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 9600
-    ports.TX_DATA.value = 0x55
+    ports.TX_DATA.value = 0x45
     ports.TX_EN.value = 1
     await RisingEdge(ports.CLK)
     ports.TX_EN.value = 0
@@ -189,7 +198,7 @@ async def tx_abort(dut):
     ports.RST.value = 1
     await RisingEdge(ports.CLK)
     ports.RST.value = 0
-    
+    await RisingEdge(ports.CLK)
     # Проверяем что линия вернулась в idle
     assert dut.DATAo.value == 1, "Линия должна быть в состоянии idle"
     assert dut.BUSYo.value == 0, "Флаг BUSY должен сброситься"
@@ -205,7 +214,7 @@ async def overflow(dut):
     
     # Установка скорости выше максимальной
     ports.BAUD_RATE.value = tbc.design.BAUD_RATE = tbc.design.CLOCK_FREQ // 2
-    ports.TX_DATA.value = 0x55
+    ports.TX_DATA.value = 0x75
     ports.TX_EN.value = 1
     await RisingEdge(ports.CLK)
     ports.TX_EN.value = 0
