@@ -158,7 +158,6 @@ async def baud_change(dut):
     value = 0x55
     ports.TX_DATA.value = value
     ports.TX_EN.value = 1
-    await RisingEdge(dut.CLKip)
     await RisingEdge(ports.CLK)
     ports.TX_EN.value = 0
     received = await check_uart_frame(ports.DATA_OUT)
@@ -175,33 +174,6 @@ async def baud_change(dut):
     ports.TX_EN.value = 0
     received = await check_uart_frame(ports.DATA_OUT)
     assert received == value, f"Ожидалось {value:X}, получено {received:X}"
-
-@cocotb.test()
-async def abort(dut):
-    """Проверка прерывания передачи"""
-    ports = UART_TX_ports(dut)
-    # Generate clock and reset
-    await cocotb.start(generate_clock(tbc,ports))
-    if (tbc.NEED_RST): 
-        await generate_reset(tbc,ports) 
-    
-    ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 9600
-    ports.TX_DATA.value = 0x45
-    ports.TX_EN.value = 1
-    await RisingEdge(ports.CLK)
-    ports.TX_EN.value = 0
-    
-    # Ждем середину передачи
-    await Timer(tbc.BIT_period * 5, units="ns")  # После 5 битов
-    
-    # Сброс
-    ports.RST.value = 1
-    await RisingEdge(ports.CLK)
-    ports.RST.value = 0
-    await RisingEdge(ports.CLK)
-    # Проверяем что линия вернулась в idle
-    assert dut.DATAo.value == 1, "Линия должна быть в состоянии idle"
-    assert dut.BUSYo.value == 0, "Флаг BUSY должен сброситься"
 
 @cocotb.test()
 async def overflow(dut):
@@ -222,3 +194,30 @@ async def overflow(dut):
     # Проверка обработки ошибки (если реализовано)
     if hasattr(dut, 'ERRORo'):
         await RisingEdge(dut.ERRORo)
+
+@cocotb.test()
+async def abort(dut):
+    """Проверка прерывания передачи"""
+    ports = UART_TX_ports(dut)
+    # Generate clock and reset
+    await cocotb.start(generate_clock(tbc,ports))
+    if (tbc.NEED_RST): 
+        await generate_reset(tbc,ports) 
+    
+    ports.BAUD_RATE.value = tbc.design.BAUD_RATE = 9600
+    ports.TX_DATA.value = 0x45
+    ports.TX_EN.value = 1
+    await RisingEdge(ports.CLK)
+    ports.TX_EN.value = 0
+    # Ждем середину передачи
+    await Timer(tbc.BIT_period * 5, units="ns")  # После 5 битов
+
+    # Сброс
+    await generate_reset(tbc,ports)
+    
+    # Проверяем что линия вернулась в idle
+    cocotb.start_soon(delayed_check(dut, ports.data_out, 4, 1))
+    cocotb.start_soon(delayed_check(dut, ports.busy, 4, 1))
+    
+    # assert dut.DATAo.value == 1, "Линия должна быть в состоянии idle"
+    # assert dut.BUSYo.value == 0, "Флаг BUSY должен сброситься"

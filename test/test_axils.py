@@ -88,7 +88,8 @@ async def test_axils_concurrent_access(dut):
     await reset(dut)
     
     # Start concurrent operations
-    write_task = cocotb.start_soon(axi_master.write(0x0, 115200.to_bytes(4, 'little')))
+    baud_rate = 115200
+    write_task = cocotb.start_soon(axi_master.write(0x0, baud_rate.to_bytes(4, 'little')))
     read_task = cocotb.start_soon(axi_master.read(0x4, 4))
     
     await write_task

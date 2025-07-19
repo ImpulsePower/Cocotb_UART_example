@@ -86,6 +86,7 @@ module uart_tx
             busy        <= 0;
             tx_strb     <= 0;
             done        <= 0;
+            STATE       <= IDLE;
         end
         else begin 
             case (STATE)
