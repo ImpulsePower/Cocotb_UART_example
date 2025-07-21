@@ -1,0 +1,10 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1753111779" />
+    <testcase name="single_byte" classname="test_uart_tx" file="/home/imp/work/uart/test/test_uart_tx.py" lineno="88" time="9.436936140060425" sim_time_ns="1041760.001" ratio_time="110391.76121767522" />
+    <testcase name="sequence" classname="test_uart_tx" file="/home/imp/work/uart/test/test_uart_tx.py" lineno="121" time="3.0853307247161865" sim_time_ns="343340.00100000005" ratio_time="111281.42543992045" />
+    <testcase name="baud_change" classname="test_uart_tx" file="/home/imp/work/uart/test/test_uart_tx.py" lineno="147" time="7.967301607131958" sim_time_ns="1124260.001" ratio_time="141109.25586068118" />
+    <testcase name="overflow" classname="test_uart_tx" file="/home/imp/work/uart/test/test_uart_tx.py" lineno="178" time="0.0005745887756347656" sim_time_ns="30.001000000163913" ratio_time="52212.9934874222" />
+    <testcase name="abort" classname="test_uart_tx" file="/home/imp/work/uart/test/test_uart_tx.py" lineno="198" time="4.629368305206299" sim_time_ns="520890.0009999997" ratio_time="112518.5914489012" />
+  </testsuite>
+</testsuites>

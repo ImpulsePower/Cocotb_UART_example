@@ -1,0 +1,8 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1753113908" />
+    <testcase name="basic_io" classname="test_axils" file="/home/imp/work/uart/test/test_axils.py" lineno="23" time="0.015472412109375" sim_time_ns="450.001" ratio_time="29084.08829980276">
+      <failure message="Test failed with RANDOM_SEED=123" />
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,10 +1,10 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1752316290" />
-    <testcase name="rx_single_byte" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="89" time="10.182798862457275" sim_time_ns="1041690.001" ratio_time="102298.9862679683" />
-    <testcase name="rx_sequence" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="115" time="3.821681499481201" sim_time_ns="347230.00100000005" ratio_time="90857.91190268917" />
-    <testcase name="rx_overflow" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="142" time="0.8791632652282715" sim_time_ns="86830.00099999993" ratio_time="98764.36429296764" />
-    <testcase name="rx_glitch" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="164" time="0.25623464584350586" sim_time_ns="26171.00099999993" ratio_time="102136.85551322263" />
-    <testcase name="baud_change" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="186" time="11.492888927459717" sim_time_ns="1128490.001" ratio_time="98190.28167093155" />
+    <property name="random_seed" value="1753111708" />
+    <testcase name="single_byte" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="89" time="7.649357557296753" sim_time_ns="1041690.001" ratio_time="136180.0639069784" />
+    <testcase name="sequence" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="115" time="3.19746732711792" sim_time_ns="347230.00100000005" ratio_time="108595.32419772385" />
+    <testcase name="overflow" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="142" time="0.7950310707092285" sim_time_ns="86830.00099999993" ratio_time="109215.85859850852" />
+    <testcase name="glitch" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="164" time="0.2524144649505615" sim_time_ns="26171.00099999993" ratio_time="103682.65148800345" />
+    <testcase name="baud_change" classname="test_uart_rx" file="/home/imp/work/uart/test/test_uart_rx.py" lineno="186" time="10.376981973648071" sim_time_ns="1128490.001" ratio_time="108749.34579878379" />
   </testsuite>
 </testsuites>

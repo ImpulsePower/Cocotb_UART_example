@@ -87,10 +87,10 @@ module axils #(
 // Регистры и управление
     always_ff @(posedge S_AXI_ACLK) begin
         if (!S_AXI_ARESETN) begin
-            slv_reg0 <= 9600;
+            slv_reg0 <= 115200;
             // slv_reg1 <= 0;
             slv_reg2 <= 0;
-            baud_rate_reg <= 9600;
+            baud_rate_reg <= 115200;
             data_ready <= 0;
             overrun_error <= 0;
             intr_enable <= 0;
@@ -230,5 +230,10 @@ module axils #(
     assign S_AXI_RVALID = rvalid;
     assign S_AXI_RRESP = 2'b00; // OKAY response
     assign S_AXI_RDATA = rdata_int;
-    
+
+    initial begin
+        $dumpfile("test/dump/axils.fst");
+        $dumpvars(0, axils);
+    end
+
 endmodule: axils
