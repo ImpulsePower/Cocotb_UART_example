@@ -25,7 +25,7 @@ async def basic_io(dut):
     """Basic write and read operations test"""
     ports = AXILS_ports(dut)
     # Create AXI Lite Master
-    axi_master = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S_AXI"), dut.S_AXI_ACLK)
+    axi_master = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S_AXI"), ports.S_AXI_ACLK)
     
     # Start clock
     clock = Clock(dut.S_AXI_ACLK, 10, units="ns")  # 100 MHz
