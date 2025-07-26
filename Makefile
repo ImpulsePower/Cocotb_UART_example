@@ -5,9 +5,10 @@
 # * Language: makefile
 # * History:
 
-# ======================== SYSTEM ==============================
+# ========================= SYSTEM =============================
 PWD=$(shell pwd)
-export PYTHONPATH := $(PWD)/test:$(PYTHONPATH)
+export PYTHONPATH := $(PYTHONPATH):$(PWD)/test/modules
+export COVERAGE_FILE=test/coverage/.coverage
 # ==============================================================
 
 # ========================== KEYS ==============================
@@ -52,8 +53,8 @@ PDF_DIR = $(MD_SRC_DIR)/pdf
 MD_FILES = $(wildcard $(MD_SRC_DIR)/*.md)
 
 # Paths of D2
-D2_SRC_DIR = docs/content
-D2_OUT_DIR = docs/img
+D2_SRC_DIR = docs/wiki/content
+D2_OUT_DIR = docs/schemes/img
 D2_SOURCES = $(shell find $(D2_SRC_DIR) -name '*.d2')
 
 # Design
@@ -119,7 +120,7 @@ UART_RESULTS_FILE = $(RESULTS_DIR)/$(TOPLEVEL_UART)_results.xml
 COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ps
 # WAVES ?= 1
-
+COVERAGE=1
 # ifeq ($(SIM),icarus)
 #     ifeq ($(WAVES),1)
 #         export COCOTB_DISABLE_IVERILOG_DUMP=1
