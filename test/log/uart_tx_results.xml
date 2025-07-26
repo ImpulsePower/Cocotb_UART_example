@@ -1,10 +1,10 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1753274493" />
-    <testcase name="single_byte" classname="test_uart_tx" file="/home/imp/work/uart/test/test_uart_tx.py" lineno="88" time="8.862563371658325" sim_time_ns="1041760.001" ratio_time="117546.12715452666" />
-    <testcase name="sequence" classname="test_uart_tx" file="/home/imp/work/uart/test/test_uart_tx.py" lineno="121" time="2.9803237915039062" sim_time_ns="343340.00100000005" ratio_time="115202.24815128114" />
-    <testcase name="baud_change" classname="test_uart_tx" file="/home/imp/work/uart/test/test_uart_tx.py" lineno="147" time="9.702667474746704" sim_time_ns="1124260.001" ratio_time="115871.22860039576" />
-    <testcase name="overflow" classname="test_uart_tx" file="/home/imp/work/uart/test/test_uart_tx.py" lineno="178" time="0.0005805492401123047" sim_time_ns="30.001000000163913" ratio_time="51676.925792479466" />
-    <testcase name="abort" classname="test_uart_tx" file="/home/imp/work/uart/test/test_uart_tx.py" lineno="198" time="4.4236674308776855" sim_time_ns="520890.0009999997" ratio_time="117750.71456866991" />
+    <property name="random_seed" value="1753459577" />
+    <testcase name="single_byte" classname="test_uart_tx" file="/home/imp/work/uart/test/modules/test_uart_tx.py" lineno="88" time="8.844953775405884" sim_time_ns="1041760.001" ratio_time="117780.15210172141" />
+    <testcase name="sequence" classname="test_uart_tx" file="/home/imp/work/uart/test/modules/test_uart_tx.py" lineno="121" time="2.9089748859405518" sim_time_ns="343340.00100000005" ratio_time="118027.8326428345" />
+    <testcase name="baud_change" classname="test_uart_tx" file="/home/imp/work/uart/test/modules/test_uart_tx.py" lineno="147" time="9.815302848815918" sim_time_ns="1124260.001" ratio_time="114541.54989579628" />
+    <testcase name="overflow" classname="test_uart_tx" file="/home/imp/work/uart/test/modules/test_uart_tx.py" lineno="178" time="0.0005910396575927734" sim_time_ns="30.001000000163913" ratio_time="50759.70726288322" />
+    <testcase name="abort" classname="test_uart_tx" file="/home/imp/work/uart/test/modules/test_uart_tx.py" lineno="198" time="4.435850381851196" sim_time_ns="520890.0009999997" ratio_time="117427.31520683497" />
   </testsuite>
 </testsuites>
