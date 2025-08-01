@@ -52,40 +52,40 @@ async def basic_io(dut):
     read_data = await axi_master.read(0x4, 4)
     assert (int.from_bytes(read_data.data, 'little') & (1 << 8)) != 0, "Interrupt enable bit not set"
 
-# @cocotb.test()
-# async def status_registers(dut):
-#     """Test status register behavior"""
+@cocotb.test()
+async def status_registers(dut):
+    """Test status register behavior"""
     
-#     axi_master = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S_AXI"), dut.S_AXI_ACLK)
-#     clock = Clock(dut.S_AXI_ACLK, 10, units="ns")
-#     cocotb.start_soon(clock.start())
-#     await reset(dut)
+    axi_master = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S_AXI"), dut.S_AXI_ACLK)
+    clock = Clock(dut.S_AXI_ACLK, 10, units="ns")
+    cocotb.start_soon(clock.start())
+    await reset(dut)
     
-#     # Initial status check (should be 0)
-#     read_data = await axi_master.read(0x4, 4)
-#     status = int.from_bytes(read_data.data, 'little')
-#     assert (status & 0x1) == 0, "Data ready flag should be 0 after reset"
+    # Initial status check (should be 0)
+    read_data = await axi_master.read(0x4, 4)
+    status = int.from_bytes(read_data.data, 'little')
+    assert (status & 0x1) == 0, "Data ready flag should be 0 after reset"
     
-#     # Simulate RX data received (via backdoor or force)
-#     dut.rx_data.value = 0x55
-#     dut.rx_done.value = 1
-#     await RisingEdge(dut.S_AXI_ACLK)
-#     dut.rx_done.value = 0
-#     await Timer(100, units="ns")
+    # Simulate RX data received (via backdoor or force)
+    dut.rx_data.value = 0x55
+    dut.rx_done.value = 1
+    await RisingEdge(dut.S_AXI_ACLK)
+    dut.rx_done.value = 0
+    await Timer(100, units="ns")
     
-#     # Check status register (bit 0 should be 1)
-#     read_data = await axi_master.read(0x4, 4)
-#     status = int.from_bytes(read_data.data, 'little')
-#     assert (status & 0x1) == 1, "Data ready flag not set after RX complete"
+    # Check status register (bit 0 should be 1)
+    read_data = await axi_master.read(0x4, 4)
+    status = int.from_bytes(read_data.data, 'little')
+    assert (status & 0x1) == 1, "Data ready flag not set after RX complete"
     
-#     # Read data register (should clear data ready flag)
-#     await axi_master.read(0x8, 4)
-#     await Timer(100, units="ns")
+    # Read data register (should clear data ready flag)
+    await axi_master.read(0x8, 4)
+    await Timer(100, units="ns")
     
-#     # Verify flag cleared
-#     read_data = await axi_master.read(0x4, 4)
-#     status = int.from_bytes(read_data.data, 'little')
-#     assert (status & 0x1) == 0, "Data ready flag not cleared after read"
+    # Verify flag cleared
+    read_data = await axi_master.read(0x4, 4)
+    status = int.from_bytes(read_data.data, 'little')
+    assert (status & 0x1) == 0, "Data ready flag not cleared after read"
 
 # @cocotb.test()
 # async def concurrent_access(dut):

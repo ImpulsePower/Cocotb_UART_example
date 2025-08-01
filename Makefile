@@ -222,7 +222,7 @@ pdoc:
 test: test_fifo test_rx test_tx
 
 # Cocotb testing fifo
-test_fifo:
+test/fifo:
 	SIM="$(SIM)" \
 	TOPLEVEL_LANG="$(TOPLEVEL_LANG)" \
 	VERILOG_SOURCES="$(TEST_FIFO_SOURCES)" \
@@ -232,11 +232,11 @@ test_fifo:
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_FIFO)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
-view_fifo:
+view/fifo:
 	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_FIFO).fst
 
 # Cocotb testing uart rx
-test_rx:
+test/rx:
 	SIM="$(SIM)" \
 	TOPLEVEL_LANG="$(TOPLEVEL_LANG)" \
 	VERILOG_SOURCES="$(TEST_RX_SOURCES)" \
@@ -246,11 +246,11 @@ test_rx:
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_RX)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
-view_rx:
+view/rx:
 	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_RX).fst
 
 # Cocotb testing uart tx
-test_tx:
+test/tx:
 	SIM="$(SIM)" \
 	TOPLEVEL_LANG="$(TOPLEVEL_LANG)" \
 	VERILOG_SOURCES="$(TEST_TX_SOURCES)" \
@@ -260,11 +260,11 @@ test_tx:
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_TX)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
-view_tx:
+view/tx:
 	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_TX).fst
 
 # Cocotb testing AXI Lite slave
-test_axi:
+test/axi:
 	SIM="$(SIM)" \
 	TOPLEVEL_LANG="$(TOPLEVEL_LANG)" \
 	VERILOG_SOURCES="$(TEST_AXI_SOURCES)" \
@@ -274,11 +274,11 @@ test_axi:
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_AXI)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
-view_axi:
+view/axi:
 	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_AXI).fst
 
 # Cocotb testing UART
-test_uart:
+test/uart:
 	SIM="$(SIM)" \
 	TOPLEVEL_LANG="$(TOPLEVEL_LANG)" \
 	VERILOG_SOURCES="$(TEST_UART_SOURCES)" \
@@ -288,7 +288,7 @@ test_uart:
 	SIM_BUILD=$(PWD)/$(COCOTB_BUILD)/$(TOPLEVEL_UART)/$(SIM) \
 	$(MAKE) -f $(shell cocotb-config --makefiles)/Makefile.sim
 
-view_uart:
+view/uart:
 	surfer $(WAVEFORM_DIR)/$(TOPLEVEL_UART).fst
 
 # Cleaning generated files
