@@ -59,7 +59,7 @@ D2_SOURCES = $(shell find $(D2_SRC_DIR) -name '*.d2')
 
 # Design
 HEADER_FILE = header
-COCOTB_BUILD = test/build
+COCOTB_BUILD = test/playground
 TOPLEVEL_FIFO = fifo
 TEST_FIFO_SOURCES = $(PWD)/src/$(HEADER_FILE).svh \
 					$(PWD)/src/$(TOPLEVEL_FIFO).sv
@@ -84,13 +84,13 @@ TEST_UART_SOURCES = $(sort \
     				$(TEST_TX_SOURCES) \
     				$(TEST_AXI_SOURCES))		
 
-RESULTS_DIR = test/log
+RESULTS_DIR = test/logs
 WAVEFORM_DIR = test/dump
  
 PDOC_DIR = docs
 DOC_NAME = docs
 CONFIG = config/pydoc.yml
-SCRIPTS_DIR := scripts
+SCRIPTS_TOOLS_DIR := scripts/tools
 # ==============================================================
 
 # ========================= RULES ==============================
@@ -141,7 +141,7 @@ install-conda: check-conda
 check-conda:
 	@if [ ! -f "$(CONDA_EXE)" ]; then \
 		echo "Устанавливаем Miniconda..."; \
-		chmod +x $(SCRIPTS_DIR)/install_conda.sh && $(SCRIPTS_DIR)/install_conda.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_conda.sh && $(SCRIPTS_TOOLS_DIR)/install_conda.sh; \
 		echo "Miniconda установлена"; \
 	else \
 		echo "Miniconda уже установлена"; \
@@ -152,7 +152,7 @@ install-d2: check-d2
 check-d2:
 	@if [ ! -f "$(D2_EXE)" ]; then \
 		echo "Устанавливаем D2..."; \
-		chmod +x $(SCRIPTS_DIR)/install_d2.sh && $(SCRIPTS_DIR)/install_d2.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_d2.sh && $(SCRIPTS_TOOLS_DIR)/install_d2.sh; \
 		echo "D2 установлен"; \
 	else \
 		echo "D2 уже установлен"; \
@@ -163,7 +163,7 @@ install-pandoc: check-pandoc
 check-pandoc:
 	@if [ ! -f "$(PANDOC_EXE)" ]; then \
 		echo "Устанавливаем Pandoc..."; \
-		chmod +x $(SCRIPTS_DIR)/install_pandoc.sh && $(SCRIPTS_DIR)/install_pandoc.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_pandoc.sh && $(SCRIPTS_TOOLS_DIR)/install_pandoc.sh; \
 		echo "Pandoc установлен"; \
 	else \
 		echo "Pandoc уже установлен"; \
@@ -174,7 +174,7 @@ install-poetry: check-poetry
 check-poetry:
 	@if [ ! -f "$(POETRY_EXE)" ]; then \
 		echo "Устанавливаем Poetry..."; \
-		chmod +x $(SCRIPTS_DIR)/install_poetry.sh && $(SCRIPTS_DIR)/install_poetry.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_poetry.sh && $(SCRIPTS_TOOLS_DIR)/install_poetry.sh; \
 		echo "Poetry установлен"; \
 	else \
 		echo "Poetry уже установлен"; \
@@ -185,7 +185,7 @@ install-verilator: check-verilator
 check-verilator:
 	@if [ -z "$(VERILATOR_EXE)" ]; then \
 		echo "Устанавливаем Verilator..."; \
-		chmod +x $(SCRIPTS_DIR)/install_verilator.sh && $(SCRIPTS_DIR)/install_verilator.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_verilator.sh && $(SCRIPTS_TOOLS_DIR)/install_verilator.sh; \
 		echo "Verilator установлен"; \
 	else \
 		echo "Verilator уже установлен"; \

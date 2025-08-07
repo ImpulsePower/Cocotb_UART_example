@@ -1,0 +1,11 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1754423562" />
+    <testcase name="basic_io" classname="test_axils" file="/home/imp/work/uart/test/modules/test_axils.py" lineno="23" time="0.01462244987487793" sim_time_ns="450.001" ratio_time="30774.665247656158">
+      <failure message="Test failed with RANDOM_SEED=123" />
+    </testcase>
+    <testcase name="status_registers" classname="test_axils" file="/home/imp/work/uart/test/modules/test_axils.py" lineno="55" time="0.008065462112426758" sim_time_ns="270.001" ratio_time="33476.19717709657">
+      <failure message="Test failed with RANDOM_SEED=123" />
+    </testcase>
+  </testsuite>
+</testsuites>

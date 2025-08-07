@@ -1,0 +1,14 @@
+{
+  "project_structure": {
+    "files": [".env"],
+    "directories": [
+      "configs",
+      "docs",
+      "projects",
+      "scripts",
+      "src",
+      "target",
+      "test"
+    ]
+  }
+}
