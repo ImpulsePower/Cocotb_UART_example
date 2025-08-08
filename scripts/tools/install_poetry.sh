@@ -1,59 +1,54 @@
 #!/bin/bash
+set -e
 
-# Скрипт для установки Poetry и базовых зависимостей проекта
-
-set -e  # Прерывать выполнение при ошибках
-
-# Конфигурация зависимостей
-declare -A DEPENDENCIES=(
-    ["cocotb"]="^1.9.2"
-    ["icecream"]="^2.1.4"
-    ["pytest"]="^8.3.4"
-    ["pytest-cov"]="^6.1.0"
-    ["debugpy"]="^1.8.14"
-)
-
-# 1. Установка Poetry в .poetry
-POETRY_DIR=".poetry"
-mkdir -p "$POETRY_DIR"
-
-echo "🔧 Устанавливаем Poetry в $POETRY_DIR..."
-curl -sSL https://install.python-poetry.org | python3 - --yes --path "$POETRY_DIR"
-
-# Добавляем .poetry в .gitignore
-grep -qxF "$POETRY_DIR" .gitignore || echo "$POETRY_DIR" >> .gitignore
-
-# 2. Инициализация pyproject.toml (если не существует)
-if [ ! -f "pyproject.toml" ]; then
-    echo "🛠 Создаём pyproject.toml..."
-    "$POETRY_DIR/bin/poetry" init --no-interaction --python "^3.13"
+# 1. Активация Conda окружения (если нужно)
+if [ -n "$CONDA_DEFAULT_ENV" ]; then
+    echo "ℹ️  Используется Conda окружение: $CONDA_DEFAULT_ENV"
+else
+    echo "⚠️  Внимание: Conda окружение не активировано"
+    echo "Активируйте его командой: conda activate <ваше_окружение>"
+    exit 1
 fi
 
-# 3. Добавление зависимостей
-echo "📦 Добавляем зависимости в pyproject.toml..."
-for pkg in "${!DEPENDENCIES[@]}"; do
-    version="${DEPENDENCIES[$pkg]}"
-    if ! grep -q "^$pkg =" pyproject.toml; then
-        "$POETRY_DIR/bin/poetry" add "$pkg=$version" --no-interaction
-        echo "  + $pkg $version"
-    else
-        echo "  ✓ $pkg (уже добавлен)"
+# 2. Проверка наличия Poetry в текущем окружении
+if ! command -v poetry &> /dev/null; then
+    echo "❌ Poetry не найден в текущем Conda окружении"
+    echo "Установите его командой:"
+    echo "  conda install -c conda-forge poetry"
+    exit 1
+fi
+
+# 3. Проверка конфигурационных файлов
+if [ ! -f "configs/pyproject.toml" ] || [ ! -f "configs/poetry.lock" ]; then
+    echo "❌ Ошибка: Не найдены pyproject.toml и/или poetry.lock в configs/"
+    exit 1
+fi
+
+# 4. Копирование файлов
+echo "📂 Копируем конфиги из configs/ в корень..."
+cp configs/pyproject.toml configs/poetry.lock .
+
+# 5. Проверка и установка
+if poetry check; then
+    echo "✅ Конфигурация верна. Устанавливаем зависимости..."
+    poetry install --no-root
+    
+    # Для чистых машин может потребоваться явно указать Python
+    if [ ! -d ".venv" ]; then
+        PYTHON_PATH=$(which python)
+        poetry env use "$PYTHON_PATH"
     fi
-done
+else
+    echo "⚠️  Обнаружены проблемы в конфигурации. Исправляем..."
+    poetry lock --no-update
+    poetry install --sync
+    cp pyproject.toml poetry.lock configs/
+fi
 
-# 4. Создаём алиас для удобства
-echo -e "\nДобавьте в ваш shell-конфиг (.bashrc/.zshrc):"
-echo "########################################################"
-echo "alias poetry='$(pwd)/$POETRY_DIR/bin/poetry'"
-echo "########################################################"
+# 6. Очистка
+echo "🧹 Удаляем временные файлы..."
+rm pyproject.toml poetry.lock
 
-# 5. Установка зависимостей
-echo -e "\n🚀 Устанавливаем зависимости..."
-"$POETRY_DIR/bin/poetry" install
-
-echo -e "\n🎉 Готово! Проект настроен с:"
-"$POETRY_DIR/bin/poetry" show --tree
-
-echo -e "\nИспользуйте:"
-echo "  poetry run pytest       # запуск тестов"
-echo "  poetry shell            # активация виртуального окружения"
+echo -e "\n🎉 Готово! Проект развёрнут в Conda окружении."
+echo "Для активации виртуального окружения Poetry:"
+echo "  poetry shell"

@@ -42,6 +42,7 @@ endif
 
 # ========================== PATHS =============================
 CONDA_EXE := $(HOME)/miniconda/bin/conda
+ENV_LOC = .env
 D2_EXE := $(HOME)/.d2/d2
 POETRY_EXE := .poetry/bin/poetry
 VERILATOR_EXE := $(shell which verilator)
@@ -137,7 +138,7 @@ all: test
 
 # Install dependencies
 # Установка Miniconda
-install-conda: check-conda
+install/conda: check-conda
 check-conda:
 	@if [ ! -f "$(CONDA_EXE)" ]; then \
 		echo "Устанавливаем Miniconda..."; \
@@ -147,8 +148,18 @@ check-conda:
 		echo "Miniconda уже установлена"; \
 	fi
 
+install/env: check-env
+check-env:
+	@if [ ! -f "$(ENV_LOC)" ]; then \
+		echo "Устанавливаем Conda environment..."; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_env.sh && $(SCRIPTS_TOOLS_DIR)/install_env.sh; \
+		echo "Env установлена"; \
+	else \
+		echo "Env уже установлена"; \
+	fi
+
 # Установка D2
-install-d2: check-d2
+install/d2: check-d2
 check-d2:
 	@if [ ! -f "$(D2_EXE)" ]; then \
 		echo "Устанавливаем D2..."; \
@@ -159,7 +170,7 @@ check-d2:
 	fi
 
 # Установка Pandoc
-install-pandoc: check-pandoc
+install/pandoc: check-pandoc
 check-pandoc:
 	@if [ ! -f "$(PANDOC_EXE)" ]; then \
 		echo "Устанавливаем Pandoc..."; \
@@ -170,7 +181,7 @@ check-pandoc:
 	fi
 
 # Установка Poetry
-install-poetry: check-poetry
+install/poetry: check-poetry
 check-poetry:
 	@if [ ! -f "$(POETRY_EXE)" ]; then \
 		echo "Устанавливаем Poetry..."; \
@@ -181,7 +192,7 @@ check-poetry:
 	fi
 
 # Установка Verilator
-install-verilator: check-verilator
+install/verilator: check-verilator
 check-verilator:
 	@if [ -z "$(VERILATOR_EXE)" ]; then \
 		echo "Устанавливаем Verilator..."; \
