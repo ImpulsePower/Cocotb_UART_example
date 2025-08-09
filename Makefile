@@ -208,6 +208,18 @@ check-verilator:
 		echo "Verilator уже установлен"; \
 	fi
 
+# Установка surfer
+install/surfer: check-surfer
+check-surfer:
+	@if ! which surfer >/dev/null 2>&1; then \
+		echo "Устанавливаем Surfer..."; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_surfer.sh && \
+		$(SCRIPTS_TOOLS_DIR)/install_surfer.sh; \
+		echo "Surfer установлен"; \
+	else \
+		echo "Surfer уже установлен (`which surfer`)"; \
+	fi
+
 # Проверка всех зависимостей
 check-all:
 	@echo "Проверка установленных зависимостей:"
