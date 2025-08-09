@@ -142,7 +142,8 @@ install/conda: check-conda
 check-conda:
 	@if [ ! -f "$(CONDA_EXE)" ]; then \
 		echo "Устанавливаем Miniconda..."; \
-		chmod +x $(SCRIPTS_TOOLS_DIR)/install_conda.sh && $(SCRIPTS_TOOLS_DIR)/install_conda.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_conda.sh && \
+		$(SCRIPTS_TOOLS_DIR)/install_conda.sh; \
 		echo "Miniconda установлена"; \
 	else \
 		echo "Miniconda уже установлена"; \
@@ -152,7 +153,8 @@ install/env: check-env
 check-env:
 	@if [ ! -f "$(ENV_LOC)" ]; then \
 		echo "Устанавливаем Conda environment..."; \
-		chmod +x $(SCRIPTS_TOOLS_DIR)/install_env.sh && $(SCRIPTS_TOOLS_DIR)/install_env.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_env.sh && \
+		$(SCRIPTS_TOOLS_DIR)/install_env.sh; \
 		echo "Env установлена"; \
 	else \
 		echo "Env уже установлена"; \
@@ -163,7 +165,8 @@ install/d2: check-d2
 check-d2:
 	@if [ ! -f "$(D2_EXE)" ]; then \
 		echo "Устанавливаем D2..."; \
-		chmod +x $(SCRIPTS_TOOLS_DIR)/install_d2.sh && $(SCRIPTS_TOOLS_DIR)/install_d2.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_d2.sh && \
+		$(SCRIPTS_TOOLS_DIR)/install_d2.sh; \
 		echo "D2 установлен"; \
 	else \
 		echo "D2 уже установлен"; \
@@ -174,7 +177,8 @@ install/pandoc: check-pandoc
 check-pandoc:
 	@if [ ! -f "$(PANDOC_EXE)" ]; then \
 		echo "Устанавливаем Pandoc..."; \
-		chmod +x $(SCRIPTS_TOOLS_DIR)/install_pandoc.sh && $(SCRIPTS_TOOLS_DIR)/install_pandoc.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_pandoc.sh && \
+		$(SCRIPTS_TOOLS_DIR)/install_pandoc.sh; \
 		echo "Pandoc установлен"; \
 	else \
 		echo "Pandoc уже установлен"; \
@@ -185,7 +189,8 @@ install/poetry: check-poetry
 check-poetry:
 	@if [ ! -f "$(POETRY_EXE)" ]; then \
 		echo "Устанавливаем Poetry..."; \
-		chmod +x $(SCRIPTS_TOOLS_DIR)/install_poetry.sh && $(SCRIPTS_TOOLS_DIR)/install_poetry.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_poetry.sh && \
+		$(SCRIPTS_TOOLS_DIR)/install_poetry.sh; \
 		echo "Poetry установлен"; \
 	else \
 		echo "Poetry уже установлен"; \
@@ -196,7 +201,8 @@ install/verilator: check-verilator
 check-verilator:
 	@if [ -z "$(VERILATOR_EXE)" ]; then \
 		echo "Устанавливаем Verilator..."; \
-		chmod +x $(SCRIPTS_TOOLS_DIR)/install_verilator.sh && $(SCRIPTS_TOOLS_DIR)/install_verilator.sh; \
+		chmod +x $(SCRIPTS_TOOLS_DIR)/install_verilator.sh && \
+		$(SCRIPTS_TOOLS_DIR)/install_verilator.sh; \
 		echo "Verilator установлен"; \
 	else \
 		echo "Verilator уже установлен"; \
