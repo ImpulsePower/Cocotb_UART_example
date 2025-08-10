@@ -16,8 +16,18 @@ tbc = TestbenchConstants(design=dc)
 
 async def generate_clock(tbc,ports) -> None:
     """
-    Generate clock pulses.
+    Generates continuous clock pulses for the DUT (Device Under Test).
+    
+    Args:
+        tbc: TestbenchConstants instance containing design constants and configuration,
+             initialized with the design (e.g., tbc = TestbenchConstants(design=dc)).
+        ports: FIFO_ports interface object providing access to DUT's ports
+               (e.g., ports = FIFO_ports(dut)).
+               
+    The clock generation runs indefinitely with a period defined in TestbenchConstants.
+    Typically controlled by the testbench's main coroutine or event loop.
     """
+
     # clk = getattr(dut,ports.clk)
     delay = tbc.CLOCK_DELAY
     period = tbc.CLK_period
@@ -30,7 +40,18 @@ async def generate_clock(tbc,ports) -> None:
 
 async def generate_reset(tbc,ports) -> None:
     """
-    Generate reset pulse.
+    Generates a reset pulse sequence for the DUT (Device Under Test).
+    
+    Args:
+        tbc: TestbenchConstants instance containing reset timing parameters
+             and design configuration.
+        ports: FIFO_ports interface object connected to the DUT's ports.
+    
+    The reset sequence typically includes:
+    1. Asserting reset (active level depends on design)
+    2. Holding for specified duration (from TestbenchConstants)
+    3. Deasserting reset
+    4. Optional post-reset stabilization period
     """
     # rst = getattr(dut,ports.rst)
     delay = tbc.RESET_DELAY
@@ -43,6 +64,18 @@ async def generate_reset(tbc,ports) -> None:
     ports.RST.value = 0
 
 async def delayed_check(dut, signal_name: str, cycles: int, expected: int) -> None:
+    """
+    Checks the value of a signal in the DUT after a specified number of clock cycles.
+    
+    Args:
+        dut: Device Under Test object providing signal access
+        signal_name: Name of the signal to check (must exist in dut)
+        cycles: Number of clock cycles to wait before checking
+        expected: Expected value of the signal
+    
+    Raises:
+        AssertionError: If the signal value doesn't match the expected value
+    """
     await Timer(cycles * tbc.CLK_period, units=tbc.UNIT)
     get_value = getattr(dut, signal_name).value
     if get_value != expected:
@@ -50,7 +83,26 @@ async def delayed_check(dut, signal_name: str, cycles: int, expected: int) -> No
 
 @cocotb.test()
 async def reset_behavior(dut):
-    """Test FIFO behavior during and after reset"""
+    """
+    Comprehensive test of FIFO reset functionality including:
+    - Initial reset sequence verification
+    - Behavior during active reset
+    - Post-reset recovery and operation
+    
+    Test Sequence:
+    1. Initialize clock and apply primary reset (if configured)
+    2. Pre-fill FIFO with sample data (3 items)
+    3. Verify FIFO reports non-empty state
+    4. Assert reset and validate FIFO clears (empty flag)
+    5. Release reset and confirm operational recovery
+    6. Verify post-reset write/read functionality
+    
+    Coverage:
+    - Reset polarity verification
+    - Memory clearance during reset
+    - Flag behavior (empty/full) during reset transitions
+    - Data integrity after reset cycle
+    """
     ports = FIFO_ports(dut)
     # Generate clock and reset
     await cocotb.start(generate_clock(tbc,ports))
@@ -96,7 +148,29 @@ async def reset_behavior(dut):
 
 @cocotb.test()
 async def basic_operations(dut):
-    """Test basic FIFO operations (write, read, full, empty flags)"""
+    """
+    Fundamental FIFO operation validation including:
+    - Empty/Full flag initialization
+    - Single write-read cycle
+    - Data path integrity
+    - Control signal timing
+    
+    Test Sequence:
+    1. Initialize and reset FIFO
+    2. Verify post-reset empty state
+    3. Execute single write operation (0x45)
+    4. Validate empty flag deassertion
+    5. Perform read operation and verify:
+       - Correct data output
+       - Empty flag reassertion
+       - Signal timing relationships
+    
+    Coverage:
+    - Basic write/read handshaking
+    - Data storage/retrieval accuracy
+    - Flag timing relative to clock edges
+    - Control signal (WE/RD) functionality
+    """
     ports = FIFO_ports(dut)
     # Generate clock and reset
     await cocotb.start(generate_clock(tbc,ports))
@@ -134,7 +208,27 @@ async def basic_operations(dut):
 
 @cocotb.test()
 async def full_condition(dut):
-    """Test FIFO full condition"""
+    """
+    FIFO capacity boundary testing including:
+    - Progressive filling to capacity
+    - Full flag assertion timing
+    - Write protection when full
+    
+    Test Sequence:
+    1. Initialize test environment
+    2. Gradually fill FIFO to depth capacity
+    3. Verify full flag asserts precisely when full
+    4. Attempt overflow write and verify:
+       - Data rejection
+       - Full flag persistence
+       - Memory protection
+    
+    Coverage:
+    - Depth parameter verification
+    - Full flag assertion/release timing
+    - Write ignore behavior at capacity
+    - Sequential addressing verification
+    """
     ports = FIFO_ports(dut)
     # Generate clock and reset
     await cocotb.start(generate_clock(tbc,ports))
@@ -166,7 +260,27 @@ async def full_condition(dut):
 
 @cocotb.test()
 async def simultaneous_read_write(dut):
-    """Test simultaneous read and write operations"""
+    """
+    Concurrent operation stress test including:
+    - Read-during-write behavior
+    - Pointer management
+    - Data consistency during overlap
+    
+    Test Sequence:
+    1. Pre-fill FIFO to half capacity
+    2. Activate simultaneous WE and RD (0xAA)
+    3. Verify:
+       - Flag stability (neither empty nor full)
+       - Data path integrity
+       - Correct queue advancement
+    4. Validate subsequent read operation
+    
+    Coverage:
+    - Control signal collision handling
+    - Memory pointer arithmetic
+    - Intermediate state flag management
+    - Data consistency during concurrent access
+    """
     ports = FIFO_ports(dut)
     # Generate clock and reset
     await cocotb.start(generate_clock(tbc,ports))
@@ -200,7 +314,28 @@ async def simultaneous_read_write(dut):
 
 @cocotb.test()
 async def random_operations(dut):
-    """Test random read/write operations"""
+    """
+    Stochastic stress testing including:
+    - Random write/read sequences
+    - Boundary condition triggering
+    - Extended operation stability
+    
+    Test Sequence:
+    1. Initialize with random seed
+    2. Execute N^2 random operations (N = FIFO depth)
+    3. For each operation:
+       - Randomly select write (if space) or read (if data)
+       - Maintain software reference model
+       - Verify hardware/software synchronization
+    4. Validate final state consistency
+    
+    Coverage:
+    - Cross-boundary pointer behavior
+    - Random empty/full transitions
+    - Stress test of control logic
+    - Long-duration operation stability
+    - Data integrity under random access
+    """
     ports = FIFO_ports(dut)
     # Generate clock and reset
     await cocotb.start(generate_clock(tbc,ports))
