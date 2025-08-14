@@ -92,6 +92,7 @@ PDOC_DIR = docs
 DOC_NAME = docs
 CONFIG = config/pydoc.yml
 SCRIPTS_TOOLS_DIR := scripts/tools
+CHECK_SCRIPT := install_check.sh
 # ==============================================================
 
 # ========================= RULES ==============================
@@ -220,6 +221,15 @@ check-surfer:
 		echo "Surfer уже установлен (`which surfer`)"; \
 	fi
 
+install/check: 
+	@echo "Проверка установленных зависимостей..."
+	@if [ -f "$(SCRIPTS_TOOLS_DIR)/$(CHECK_SCRIPT)" ]; then \
+		chmod +x "$(SCRIPTS_TOOLS_DIR)/$(CHECK_SCRIPT)"; \
+		"$(SCRIPTS_TOOLS_DIR)/$(CHECK_SCRIPT)"; \
+	else \
+		echo "Ошибка: Скрипт проверки $(CHECK_SCRIPT) не найден в $(SCRIPTS_TOOLS_DIR)/"; \
+		exit 1; \
+	fi
 # Проверка всех зависимостей
 check-all:
 	@echo "Проверка установленных зависимостей:"
