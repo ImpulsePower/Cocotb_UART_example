@@ -139,6 +139,8 @@ all: test
 
 # Install dependencies
 # Установка Miniconda
+install: install/conda install/env install/d2 install/pandoc install/poetry install/verilator install/surfer install/check
+
 install/conda: check-conda
 check-conda:
 	@if [ ! -f "$(CONDA_EXE)" ]; then \
@@ -258,7 +260,7 @@ pdoc:
 
 
 # Testing
-test: test_fifo test_rx test_tx
+test: test/fifo test/rx test/tx
 
 # Cocotb testing fifo
 test/fifo:
