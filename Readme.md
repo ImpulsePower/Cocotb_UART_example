@@ -2,20 +2,20 @@
 
 ## Обзор
 
-Этот репозиторий содержит тестовое окружение на базе Cocotb для верификации UART (Universal Asynchronous Receiver/Transmitter) модулей, реализованных на SystemVerilog.
+Репозиторий содержит тестовое окружение на базе Cocotb для верификации UART (Universal Asynchronous Receiver/Transmitter) модулей, реализованных на SystemVerilog.
 
 ## Структура проекта
 
 ```
 ├── test/modules            # Тестовое окружение Cocotb
-│   ├── test_axils.py       # Тесты AXI Lite Slave интерфейса
-│   ├── test_fifo.py        # Тесты FIFO модуля
-│   ├── test_uart_rx.py     # Тесты UART приемника
-│   ├── test_uart_tx.py     # Тесты UART передатчика
-│   └── lib/
-│       ├── ports.py        # Определения портов для DUT
-│       └── config.py       # Конфигурационные константы
-├── rtl/                    # Исходные коды на SystemVerilog
+│       ├── test_axils.py   # Тесты AXI Lite Slave интерфейса
+│       ├── test_fifo.py    # Тесты FIFO модуля
+│       ├── test_uart_rx.py # Тесты UART приемника
+│       ├── test_uart_tx.py # Тесты UART передатчика
+│       └── lib/
+│           ├── ports.py    # Определения портов для DUT
+│           └── config.py   # Конфигурационные константы
+├── src/                    # Исходные коды на SystemVerilog
 │   ├── axils.sv           # AXI Lite Slave интерфейс
 │   ├── fifo.sv            # Синхронное FIFO
 │   ├── uart_rx.sv         # UART приемник
