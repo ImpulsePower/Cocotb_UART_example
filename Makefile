@@ -68,7 +68,7 @@ TEST_FIFO_SOURCES = $(PWD)/src/$(HEADER_FILE).svh \
 TOPLEVEL_RX = uart_rx
 TEST_RX_SOURCES = $(PWD)/src/$(TOPLEVEL_RX).sv \
 					$(PWD)/src/sync.sv \
-					$(PWD)/src/$(TOPLEVEL_RX)_mem.sv
+					$(PWD)/src/mem.sv
 
 TOPLEVEL_TX = uart_tx
 TEST_TX_SOURCES = $(PWD)/src/$(TOPLEVEL_TX).sv \

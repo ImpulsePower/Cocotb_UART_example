@@ -22,7 +22,8 @@ module uart_rx
     input   logic [31:0]            BAUD_RATEi, // Baud rate
     output  logic                   DONEo, // Done signal
     output  logic                   READYo, // Ready signal
-    output  logic [DATA_WDTH-1:0]   DATAo //output data bus
+    output  logic [DATA_WDTH-1:0]   DATAo, //output data bus
+    output  logic [31:0]            BRo
     );
 
     // Variables
@@ -186,6 +187,7 @@ end
         DATAo = data;
         READYo = ready;
         DONEo = done;
+        BRo     = br;
     end
 
     initial begin

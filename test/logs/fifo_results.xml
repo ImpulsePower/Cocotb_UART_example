@@ -1,0 +1,10 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1756227460" />
+    <testcase name="reset_behavior" classname="test_fifo" file="/home/imp/work/uart/test/modules/test_fifo.py" lineno="84" time="0.00603485107421875" sim_time_ns="95.001" ratio_time="15742.062037926677" />
+    <testcase name="basic_operations" classname="test_fifo" file="/home/imp/work/uart/test/modules/test_fifo.py" lineno="149" time="0.0016741752624511719" sim_time_ns="85.001" ratio_time="50771.86475420109" />
+    <testcase name="full_condition" classname="test_fifo" file="/home/imp/work/uart/test/modules/test_fifo.py" lineno="209" time="0.0032372474670410156" sim_time_ns="215.00099999999998" ratio_time="66414.75580380026" />
+    <testcase name="simultaneous_read_write" classname="test_fifo" file="/home/imp/work/uart/test/modules/test_fifo.py" lineno="261" time="0.0030002593994140625" sim_time_ns="125.00100000000003" ratio_time="41663.39751303243" />
+    <testcase name="random_operations" classname="test_fifo" file="/home/imp/work/uart/test/modules/test_fifo.py" lineno="315" time="0.04907679557800293" sim_time_ns="2585.001" ratio_time="52672.5710094781" />
+  </testsuite>
+</testsuites>

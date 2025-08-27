@@ -71,22 +71,22 @@ module uart_axi_bridge (
     //     endcase
     // end
     
-    // FIFO для буферизации данных
-    uart_rx_fifo #(
-        .DATA_WIDTH(8),
-        .FIFO_DEPTH(16)
-    ) fifo (
-        .CLKip(clk),
-        .RSTi(~resetn),
-        .WEi(fifo_we),
-        .WDi(fifo_wdata),
-        .FULLo(fifo_full),
-        .AFULLo(), // Не используется
-        .REi(fifo_re),
-        .RDo(fifo_rdata),
-        .EMPTYo(fifo_empty),
-        .AEMPTYo() // Не используется
-    );
+    // // FIFO для буферизации данных
+    // uart_rx_fifo #(
+    //     .DATA_WIDTH(8),
+    //     .FIFO_DEPTH(16)
+    // ) fifo (
+    //     .CLKip(clk),
+    //     .RSTi(~resetn),
+    //     .WEi(fifo_we),
+    //     .WDi(fifo_wdata),
+    //     .FULLo(fifo_full),
+    //     .AFULLo(), // Не используется
+    //     .REi(fifo_re),
+    //     .RDo(fifo_rdata),
+    //     .EMPTYo(fifo_empty),
+    //     .AEMPTYo() // Не используется
+    // );
     
     // UART RX модуль (минимальные изменения)
     uart_rx #(

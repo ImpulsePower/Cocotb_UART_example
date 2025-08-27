@@ -9,7 +9,7 @@
 */
 `timescale 1ns/1ps
 
-`ifdef FIFO_MODE_SYNC
+// `ifdef FIFO_MODE_SYNC
 
 module fifo #(
     parameter DATA_WIDTH = 8,
@@ -30,14 +30,12 @@ module fifo #(
     logic [LOG2_DEPTH:0]   count;
     logic [LOG2_DEPTH-1:0] wr_ptr;
     logic [LOG2_DEPTH-1:0] rd_ptr;
-    logic [1:0] count_state;
 
     always_ff @(posedge CLKip or posedge RSTi) begin
         if (RSTi) begin
             wr_ptr  <= '0;
             rd_ptr  <= '0;
             count   <= '0;
-            count_state <= '0;
             memory[0] <= 0;
         end 
         else begin
@@ -73,7 +71,7 @@ module fifo #(
     end
 endmodule : fifo
 
-`endif
+// `endif
 
 // `ifdef FIFO_MODE_ASYNC
 

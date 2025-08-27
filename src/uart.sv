@@ -49,22 +49,22 @@ module uart #(
         .DATAo          (data)
     );
 
-    // Экземпляр FIFO (синхронная версия)
-    fifo #(
-        .DATA_WIDTH     (DATA_WIDTH),
-        .FIFO_DEPTH     (FIFO_DEPTH)
-    ) fifo_inst (
-        .CLKip          (CLKip),
-        .RSTi           (RSTi),
-        // Порт записи (подключен к UART)
-        .WEi            (done),       // Запись при завершении приема байта
-        .DATAi          (data),     // Данные от UART
-        // Порт чтения (внешний интерфейс)
-        .RDi            (RDi),         // Разрешение чтения извне
-        .DATAo          (DATAo),     // Выходные данные
-        .FULLo          (FULLo),     // Флаг переполнения
-        .EMPTYo         (EMPTYo)    // Флаг пустоты
-    );
+    // // Экземпляр FIFO (синхронная версия)
+    // fifo #(
+    //     .DATA_WIDTH     (DATA_WIDTH),
+    //     .FIFO_DEPTH     (FIFO_DEPTH)
+    // ) fifo_inst (
+    //     .CLKip          (CLKip),
+    //     .RSTi           (RSTi),
+    //     // Порт записи (подключен к UART)
+    //     .WEi            (done),       // Запись при завершении приема байта
+    //     .DATAi          (data),     // Данные от UART
+    //     // Порт чтения (внешний интерфейс)
+    //     .RDi            (RDi),         // Разрешение чтения извне
+    //     .DATAo          (DATAo),     // Выходные данные
+    //     .FULLo          (FULLo),     // Флаг переполнения
+    //     .EMPTYo         (EMPTYo)    // Флаг пустоты
+    // );
 
     
 endmodule: uart

@@ -184,6 +184,9 @@ module axils #(
                         write_state <= WRITE_IDLE;
                     end
                 end
+                default: begin
+                    wready <= 1'b0;
+            end
             endcase
         end
     end

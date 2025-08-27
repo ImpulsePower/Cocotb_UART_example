@@ -24,4 +24,4 @@ module mem
 	
 	always_ff @(posedge CLKip) if (RDi) Qo <= ram;
     
-endmodule
+endmodule: mem

@@ -117,7 +117,8 @@ module uart_tx
                 TRANSMIT: begin
                     data <= TXi[bit_idx];
                     if (tx_strb) begin
-                        if (bit_idx < DATA_WDTH - 1) bit_idx <= bit_idx + 1;
+                        if (bit_idx < DATA_WDTH - 1) 
+                            bit_idx <= bit_idx + 1;
                         else begin
                             bit_idx <= 0;
                             STATE <= STOP;
