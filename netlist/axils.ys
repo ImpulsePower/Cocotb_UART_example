@@ -1,3 +1,0 @@
-read_verilog -sv -formal -overwrite {workspace}/src/axils.sv
-design -reset-vlog; proc;
-write_json {workspace}/netlist/axils.json
