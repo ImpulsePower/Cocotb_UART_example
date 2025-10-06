@@ -50,20 +50,19 @@ module uart_axils #(
         REG_BAUD    = 8'h10
     } uart_reg_t;
 
-    typedef enum logic [2:0] {
+    typedef enum logic [1:0] {
         WR_IDLE,
         WR_DATA,
         WR_EXECUTE,
-        WR_SEND_RESPONSE,
-        WAIT_RESPONSE_ACK
+        WR_RESPONSE
     } write_statetype;
     write_statetype write_state;
 
     typedef enum logic [1:0] {
-        IDLE,
-        WAIT_DATA,
-        READ_DATA,
-        RD_SEND_RESPONSE
+        RD_IDLE,
+        RD_DATA,
+        RD_SEND,
+        RD_RESPONSE
     } read_statetype;
     read_statetype read_state;
 
@@ -167,12 +166,8 @@ module uart_axils #(
     //     end
     // end
 
-    
-    // always_comb begin
-        
-    // end
 
-    always_ff @(posedge S_AXI_ACLK) begin
+    always_ff @(posedge S_AXI_ACLK) begin: AXILS_write_channel
         if (!S_AXI_ARESETN) begin
             awready <= 1'b0;
             wready <= 1'b0;
@@ -180,45 +175,93 @@ module uart_axils #(
         end 
         else begin
             case (write_state)
-                IDLE: begin
+                // Логика для Write Address Channel
+                WR_IDLE: begin
                     if (S_AXI_AWVALID) begin
                         captured_addr <= S_AXI_AWADDR;
                         awready <= 1'b0;
-                        write_state <= WRITE_DATA;
+                        write_state <= WR_DATA;
                     end
                     else begin
-                        awready <= 1'b1;  // Готовы принять адрес 
+                        awready <= 1'b1;
                     end
                 end
-
-                WRITE_DATA: begin
-                    wready <= 1'b1;  // Готовы принять данные
+                // Логика для Write Data Channel
+                WR_DATA: begin
                     if (S_AXI_WVALID) begin
                         captured_data <= S_AXI_WDATA;
                         captured_strb <= S_AXI_WSTRB;
                         wready <= 1'b0;
-                        write_state <= SEND_RESPONSE;
+                        write_state <= WR_EXECUTE;
+                    end
+                    else begin
+                        wready <= 1'b1;
                     end
                 end
-
-                SEND_RESPONSE: begin
+                // Распакоука
+                WR_EXECUTE: begin
                     // Выполняем фактическую запись в регистры
                     // perform_register_write(captured_addr, captured_data, captured_strb);
 
                     bvalid <= 1'b1;  // Ответ готов
                     bresp <= OKAY;   // или SLVERR при ошибке
-                    write_state <= WAIT_RESPONSE_ACK;
+                    write_state <= WR_RESPONSE;
                 end
-
-                WAIT_RESPONSE_ACK: begin
+                // Логика для Write Response Channel
+                WR_RESPONSE: begin
                     if (S_AXI_BREADY) begin
                         bvalid <= 1'b0;
-                        write_state <= IDLE;
+                        write_state <= WR_IDLE;
                     end
+                end
+
+                default: begin
+                    write_state <= WR_IDLE;
+                end
+                    
+            endcase
+        end
+    end
+
+    always_ff @(posedge S_AXI_ACLK) begin: AXILS_read_channel
+        if (~S_AXI_ARESETN) begin
+            read_state <= RD_IDLE;
+            arready <= 1'b1;
+            rvalid <= 1'b0;
+            // araddr_reg <= 0;
+        end else begin
+            case (read_state)
+                RD_IDLE: begin
+                    if (S_AXI_ARVALID && arready) begin
+                        arready <= 1'b0;
+                        // araddr_reg <= S_AXI_ARADDR;
+                        read_state <= RD_DATA;
+                        rvalid <= 1'b1;
+                    end
+                end
+                
+                RD_DATA: begin
+                    if (S_AXI_RREADY && rvalid) begin
+                        rvalid <= 1'b0;
+                        arready <= 1'b1;
+                        read_state <= RD_IDLE;
+                    end
+                end
+
+                default: begin
+                    read_state <= RD_IDLE;
                 end
             endcase
         end
     end
+
+    always_comb begin
+        S_AXI_AWREADY   = awready;
+        S_AXI_WREADY    = wready;
+        S_AXI_BRESP     = bresp;
+
+    end
+    
     // uart_reg_t write_reg;
     // assign write_reg = uart_reg_t'(S_AXI_AWADDR[7:0]);
     
